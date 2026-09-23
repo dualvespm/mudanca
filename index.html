@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Cronograma da mudança de apartamento — setembro a dezembro de 2026.">
+<title>Cronograma de Mudança</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,400..700&family=Google+Sans+Code:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#ffffff; --surface:#f1f4f9; --surface-2:#e8edf5; --ink:#1f1f1f; --ink-2:#444746; --ink-3:#6b7079;
+  --line:#dde3ec;
+  --blue:#4285f4; --red:#ea4335; --yellow:#fbbc04; --green:#34a853;
+  --blue-soft:#d3e3fd; --red-soft:#fce8e6; --yellow-soft:#fef7e0; --green-soft:#e6f4ea;
+  --blue-ink:#0b57d0; --red-ink:#b3261e; --yellow-ink:#8a5a00; --green-ink:#146c2e;
+  --sans:"Google Sans Flex","Google Sans","Roboto",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"Google Sans Code","Roboto Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#131314; --surface:#1e1f22; --surface-2:#282a2e; --ink:#e8eaed; --ink-2:#c4c7c5; --ink-3:#9aa0a6; --line:#33363b;
+    --blue-soft:#1c2a45; --red-soft:#3a1f1d; --yellow-soft:#3a2f10; --green-soft:#16301f;
+    --blue-ink:#a8c7fa; --red-ink:#f2b8b5; --yellow-ink:#fdd663; --green-ink:#81c995;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#131314; --surface:#1e1f22; --surface-2:#282a2e; --ink:#e8eaed; --ink-2:#c4c7c5; --ink-3:#9aa0a6; --line:#33363b;
+  --blue-soft:#1c2a45; --red-soft:#3a1f1d; --yellow-soft:#3a2f10; --green-soft:#16301f;
+  --blue-ink:#a8c7fa; --red-ink:#f2b8b5; --yellow-ink:#fdd663; --green-ink:#81c995;
+}
+*{box-sizing:border-box}
+body{margin:0;-webkit-font-smoothing:antialiased;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;padding-inline:20px;padding-block:32px 64px}
+.wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:56px}
+
+/* HERO */
+.hero{position:relative;display:grid;grid-template-columns:1fr auto;gap:32px;align-items:end;padding-top:12px}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:14px;font-weight:500;color:var(--ink-2);letter-spacing:.02em}
+.dots{display:inline-flex;gap:4px}
+.dots i{width:8px;height:8px;border-radius:50%;display:block}
+h1{font-size:clamp(44px,8vw,88px);line-height:1;letter-spacing:-.035em;font-weight:600;margin:16px 0 18px;text-wrap:balance}
+h1 .c1{color:var(--blue)} h1 .c2{color:var(--red)} h1 .c3{color:var(--yellow)} h1 .c4{color:var(--green)}
+.lede{font-size:clamp(17px,2vw,20px);color:var(--ink-2);max-width:52ch;margin:0}
+.giraffe{width:240px;max-width:100%;height:auto;flex:none;display:block}
+
+/* COUNTDOWN */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.stat{background:var(--surface);border-radius:28px;padding:22px 24px;display:flex;flex-direction:column;gap:6px}
+.stat .k{font-size:13px;color:var(--ink-3);font-weight:500;letter-spacing:.04em;text-transform:uppercase}
+.stat .v{font-size:clamp(34px,5vw,48px);font-weight:600;letter-spacing:-.03em;line-height:1.05;font-variant-numeric:tabular-nums}
+.stat .s{font-size:14px;color:var(--ink-2)}
+.stat.hl{background:var(--blue);color:#fff}
+.stat.hl .k,.stat.hl .s{color:rgba(255,255,255,.85)}
+
+/* TRACK */
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+h2{font-size:28px;font-weight:600;letter-spacing:-.02em;margin:0}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:50%;display:block}
+.track-scroll{overflow-x:auto;padding-bottom:8px;margin-inline:-4px}
+.track{position:relative;min-width:760px;height:170px;margin-inline:4px}
+.months{position:absolute;inset:0;display:flex}
+.months div{border-left:1px dashed var(--line);font-size:12px;font-weight:500;color:var(--ink-3);padding:0 8px;letter-spacing:.06em;text-transform:uppercase}
+.rail{position:absolute;left:0;right:0;top:110px;height:8px;border-radius:8px;background:var(--surface-2)}
+.rail .done{position:absolute;left:0;top:0;bottom:0;border-radius:8px;background:linear-gradient(90deg,var(--blue),var(--green))}
+.band{position:absolute;top:106px;height:16px;border-radius:16px;opacity:.28}
+.pin{position:absolute;top:98px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;z-index:2}
+.pin b{width:32px;height:32px;border-radius:50%;border:4px solid var(--bg);display:block}
+.pin small{position:absolute;top:40px;white-space:nowrap;font-family:var(--mono);font-size:12px;color:var(--ink-2)}
+.plane{position:absolute;top:26px;bottom:60px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;z-index:1}
+.plane svg{width:52px;height:auto;display:block;animation:bob 3.2s ease-in-out infinite}
+.plane small{font-family:var(--mono);font-size:11px;color:var(--ink-3);white-space:nowrap;line-height:1.2}
+.plane i{flex:1;width:0;border-left:2px dotted var(--line);margin-top:3px}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-3px) rotate(-1deg)}}
+@media (prefers-reduced-motion:reduce){.plane svg{animation:none;transform:rotate(-4deg)}}
+.today{position:absolute;top:28px;bottom:10px;width:2px;background:var(--ink);transform:translateX(-1px)}
+.today span{position:absolute;top:-4px;left:6px;font-size:11px;font-weight:600;background:var(--ink);color:var(--bg);padding:2px 8px;border-radius:10px;white-space:nowrap}
+
+/* AGENDA */
+.agenda{display:flex;flex-direction:column;gap:12px}
+.row{display:grid;grid-template-columns:132px 1fr auto;gap:24px;align-items:center;padding:20px 24px;border-radius:28px;background:var(--surface);transition:transform .2s ease}
+.row:hover{transform:translateY(-2px)}
+.date{display:flex;flex-direction:column;line-height:1.1}
+.date .d{font-size:40px;font-weight:600;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.date .m{font-size:13px;font-weight:500;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em}
+.body h3{font-size:20px;font-weight:600;margin:0 0 4px;letter-spacing:-.01em}
+.body p{margin:0;color:var(--ink-2);font-size:15px;max-width:60ch}
+.tag{font-family:var(--mono);font-size:12px;font-weight:500;padding:6px 12px;border-radius:20px;white-space:nowrap}
+.wk{font-family:var(--mono);font-size:12px;color:var(--ink-3);margin-bottom:6px;display:block}
+.t-blue{background:var(--blue-soft);color:var(--blue-ink)}
+.t-red{background:var(--red-soft);color:var(--red-ink)}
+.t-yellow{background:var(--yellow-soft);color:var(--yellow-ink)}
+.t-green{background:var(--green-soft);color:var(--green-ink)}
+.row.next{outline:2px solid var(--blue);outline-offset:-2px;background:var(--bg)}
+.row.past{opacity:.55}
+.row.final{background:var(--ink);color:var(--bg)}
+.row.final .date .m,.row.final .wk,.row.final .body p{color:var(--bg);opacity:.75}
+.row.final .date .d{background:linear-gradient(90deg,var(--blue),var(--red) 40%,var(--yellow) 70%,var(--green));-webkit-background-clip:text;background-clip:text;color:transparent}
+.nowchip{display:inline-block;font-size:11px;font-weight:600;background:var(--blue);color:#fff;padding:2px 8px;border-radius:10px;margin-left:8px;vertical-align:3px;letter-spacing:.02em}
+
+/* NOVEMBER CHECKLIST */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chips span{font-size:13px;padding:6px 14px;border-radius:20px;border:1px solid var(--line);color:var(--ink-2);background:var(--bg)}
+
+footer{font-size:13px;color:var(--ink-3);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:20px}
+
+@media (max-width:760px){
+  .hero{grid-template-columns:1fr}
+  .giraffe{width:170px;order:-1}
+  .stats{grid-template-columns:1fr}
+  .row{grid-template-columns:1fr;gap:10px;padding:20px}
+  .date{flex-direction:row;align-items:baseline;gap:10px}
+  .tag{justify-self:start}
+}
+@media (prefers-reduced-motion:reduce){.row{transition:none}.row:hover{transform:none}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="hero">
+    <div>
+      <div class="eyebrow"><span class="dots"><i style="background:var(--blue)"></i><i style="background:var(--red)"></i><i style="background:var(--yellow)"></i><i style="background:var(--green)"></i></span>Set → Dez 2026 · São Paulo</div>
+      <h1><span class="c1">Cronograma</span><br>de <span class="c4">mudança</span><span class="c3">.</span></h1>
+      <p class="lede">Três semanas de visitas, decisão até 26 de outubro e chaves na mão na semana de 14 de dezembro.</p>
+    </div>
+    <svg class="giraffe" viewBox="0 -18 240 292" role="img" aria-label="Girafinha dentro de uma casa, com o pescoço saindo pela chaminé">
+      <ellipse cx="112" cy="264" rx="112" ry="7" fill="#34a853" opacity=".35"/>
+      <!-- chaminé (fundo) -->
+      <rect x="146" y="100" width="30" height="60" fill="#c5221f"/>
+      <!-- pescoço -->
+      <rect x="152" y="22" width="18" height="84" rx="9" fill="#fbbc04"/>
+      <path d="M152 30 v70" stroke="#b06000" stroke-width="3" stroke-linecap="round" stroke-dasharray="5 6"/>
+      <rect x="158" y="40" width="8" height="9" rx="3" fill="#b06000"/>
+      <rect x="155" y="58" width="9" height="8" rx="3" fill="#b06000"/>
+      <rect x="160" y="75" width="7" height="9" rx="3" fill="#b06000"/>
+      <!-- cabeça -->
+      <line x1="158" y1="10" x2="154" y2="-6" stroke="#fbbc04" stroke-width="4" stroke-linecap="round"/>
+      <line x1="167" y1="9" x2="168" y2="-7" stroke="#fbbc04" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="154" cy="-7" r="4" fill="#b06000"/>
+      <circle cx="168" cy="-8" r="4" fill="#b06000"/>
+      <ellipse cx="148" cy="16" rx="8" ry="4" fill="#fbbc04" transform="rotate(-25 148 16)"/>
+      <ellipse cx="170" cy="20" rx="20" ry="13" fill="#fbbc04"/>
+      <ellipse cx="185" cy="25" rx="10" ry="8.5" fill="#fde293"/>
+      <circle cx="188" cy="22" r="1.6" fill="#8a5a00"/>
+      <circle cx="166" cy="15" r="2.8" fill="#1f1f1f"/>
+      <circle cx="167" cy="14" r=".9" fill="#fff"/>
+      <path d="M181 29 q4 3 8 0" fill="none" stroke="#8a5a00" stroke-width="1.6" stroke-linecap="round"/>
+      <circle cx="176" cy="24" r="3" fill="#ea4335" opacity=".35"/>
+      <!-- borda da chaminé -->
+      <rect x="141" y="96" width="40" height="11" rx="4" fill="#a50e0e"/>
+      <!-- paredes -->
+      <rect x="30" y="160" width="160" height="104" rx="6" fill="#4285f4"/>
+      <!-- telhado -->
+      <polygon points="16,168 110,90 204,168" fill="#ea4335" stroke="#ea4335" stroke-width="8" stroke-linejoin="round"/>
+      <!-- porta -->
+      <path d="M60 264 v-38 a17 17 0 0 1 34 0 v38 z" fill="#34a853"/>
+      <circle cx="86" cy="246" r="2.5" fill="#fbbc04"/>
+      <!-- janela -->
+      <rect x="116" y="192" width="50" height="40" rx="6" fill="#fef7e0"/>
+      <path d="M141 192 v40 M116 212 h50" stroke="#4285f4" stroke-width="4"/>
+      <!-- janelinha do telhado -->
+      <circle cx="110" cy="134" r="11" fill="#fef7e0"/>
+      <path d="M110 123 v22 M99 134 h22" stroke="#ea4335" stroke-width="3"/>
+    </svg>
+  </header>
+
+  <section class="stats" aria-label="Contagem regressiva">
+    <div class="stat hl"><span class="k">Até a mudança</span><span class="v" id="dMove">—</span><span class="s">semana de 14 de dezembro</span></div>
+    <div class="stat"><span class="k">Até a decisão</span><span class="v" id="dDecide">—</span><span class="s">prazo limite · 26 de outubro</span></div>
+    <div class="stat"><span class="k">Próximo marco</span><span class="v" id="nextName" style="font-size:clamp(24px,3vw,30px);line-height:1.15">—</span><span class="s" id="nextWhen">—</span></div>
+  </section>
+
+  <section>
+    <div class="sec-h">
+      <h2>Linha do tempo</h2>
+      <div class="legend">
+        <span><i style="background:var(--blue)"></i>Visitas</span>
+        <span><i style="background:var(--red)"></i>Decisão</span>
+        <span><i style="background:var(--yellow)"></i>Saída</span>
+        <span><i style="background:var(--green)"></i>Preparação e mudança</span>
+      </div>
+    </div>
+    <div class="track-scroll"><div class="track" id="track">
+      <div class="months" id="months"></div>
+      <div class="rail"><div class="done" id="done"></div></div>
+    </div></div>
+  </section>
+
+  <section>
+    <div class="sec-h"><h2>Agenda</h2><span class="legend">Semanas começando na segunda-feira</span></div>
+    <div class="agenda" id="agenda"></div>
+  </section>
+
+  <footer><span>Mudança 2026 · Eduardo Alves</span><span id="stamp"></span></footer>
+</div>
+
+<script>
+const Y=2026;
+const D=(m,d)=>new Date(Y,m-1,d);
+const events=[
+  {wk:"Semana 1",date:D(9,28),title:"Início das visitas",desc:"Começa a rodada de visitas aos apartamentos.",tag:"Visitas",c:"blue"},
+  {wk:"Semana 2",date:D(10,5),title:"Visitas aos apartamentos",desc:"Segunda rodada de visitas.",tag:"Visitas",c:"blue"},
+  {wk:"Semana 3",date:D(10,12),title:"Visitas aos apartamentos",desc:"Terceira rodada de visitas.",tag:"Visitas",c:"blue"},
+  {wk:"Semana 4",date:D(10,26),title:"Prazo limite para definir o apartamento",desc:"Escolha final do novo apartamento.",tag:"Decisão",c:"red"},
+  {wk:"Semana 5",date:D(11,2),title:"Comunicar saída",desc:"Eduardo comunica a saída do apartamento atual.",tag:"Saída",c:"yellow"},
+  {wk:"Novembro",date:D(11,9),end:D(12,6),title:"Ajustes gerais",desc:"Mês de preparação para a mudança.",tag:"Preparação",c:"green",chips:["Ajustes gerais","Contrato","Venda de itens"],monthLabel:true},
+  {wk:"Dezembro",date:D(12,14),title:"Mudança para o novo apartamento",desc:"Semana do dia 14.",tag:"Mudança",c:"green",final:true}
+];
+const MES=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+const today=new Date();today.setHours(0,0,0,0);
+const dayMs=864e5;
+const diff=d=>Math.round((d-today)/dayMs);
+const fmtDays=n=>n<=0?"Hoje":n===1?"1 dia":n+" dias";
+
+/* stats */
+const move=D(12,14),decide=D(10,26);
+document.getElementById("dMove").textContent=diff(move)>0?fmtDays(diff(move)):"Mudou!";
+document.getElementById("dDecide").textContent=diff(decide)>0?fmtDays(diff(decide)):"Decidido";
+const next=events.find(e=>(e.end||e.date)>=today);
+if(next){
+  document.getElementById("nextName").textContent=next.title;
+  const n=diff(next.date);
+  document.getElementById("nextWhen").textContent=n>0?`em ${fmtDays(n)} · ${next.date.getDate()} de ${MES[next.date.getMonth()]}`:"em andamento";
+}
+
+/* track */
+const start=D(9,21),end=D(12,31),span=end-start;
+const pct=d=>Math.max(0,Math.min(100,(d-start)/span*100));
+const months=document.getElementById("months");
+[[D(9,21),"Set"],[D(10,1),"Out"],[D(11,1),"Nov"],[D(12,1),"Dez"]].forEach(([d,l],i,a)=>{
+  const el=document.createElement("div");
+  const w=(i<a.length-1?pct(a[i+1][0]):100)-pct(d);
+  el.style.width=w+"%";el.textContent=l;months.appendChild(el);
+});
+document.getElementById("done").style.width=pct(today)+"%";
+const track=document.getElementById("track");
+const band=document.createElement("div");band.className="band";
+band.style.left=pct(D(11,2))+"%";band.style.width=(pct(D(12,14))-pct(D(11,2)))+"%";band.style.background="var(--green)";
+track.appendChild(band);
+events.filter(e=>!e.monthLabel).forEach((e,i)=>{
+  const p=document.createElement("div");p.className="pin";
+  p.style.left=pct(e.date)+"%";
+  p.innerHTML=`<b style="background:var(--${e.c})"></b><small>${String(e.date.getDate()).padStart(2,"0")} ${MES[e.date.getMonth()]}</small>`;
+  p.title=e.title;track.appendChild(p);
+});
+const planeSvg=`<svg viewBox="0 -6 60 44" aria-hidden="true">
+  <path d="M1 20 h7 M3 25 h6" stroke="var(--ink-3)" stroke-width="1.5" stroke-linecap="round" opacity=".6"/>
+  <polygon points="10,19 6,7 17,18" fill="#ea4335"/>
+  <line x1="36" y1="4" x2="35" y2="-2" stroke="#fbbc04" stroke-width="1.8" stroke-linecap="round"/>
+  <line x1="40" y1="3" x2="41" y2="-3" stroke="#fbbc04" stroke-width="1.8" stroke-linecap="round"/>
+  <circle cx="35" cy="-3" r="1.6" fill="#b06000"/><circle cx="41" cy="-4" r="1.6" fill="#b06000"/>
+  <rect x="33" y="5" width="5" height="15" rx="2.5" fill="#fbbc04"/>
+  <rect x="34.3" y="10" width="2.4" height="2.6" rx="1" fill="#b06000"/>
+  <ellipse cx="40" cy="6" rx="6" ry="4" fill="#fbbc04"/>
+  <ellipse cx="45" cy="7.5" rx="3" ry="2.6" fill="#fde293"/>
+  <circle cx="39" cy="4.6" r="1.1" fill="#1f1f1f"/>
+  <rect x="8" y="17" width="44" height="12" rx="6" fill="#4285f4"/>
+  <circle cx="18" cy="22" r="1.7" fill="#fef7e0"/><circle cx="24" cy="22" r="1.7" fill="#fef7e0"/>
+  <path d="M44 18 q6 1 7 5 h-7 z" fill="#d3e3fd"/>
+  <polygon points="24,25 35,25 27,37 21,37" fill="#0b57d0"/>
+  <ellipse cx="53.5" cy="23" rx="1.6" ry="7" fill="#9aa0a6"/>
+  <circle cx="52.5" cy="23" r="1.8" fill="#34a853"/>
+</svg>`;
+[D(10,6),D(10,14),D(11,15),D(11,22)].forEach(d=>{
+  const pl=document.createElement("div");pl.className="plane";pl.style.left=pct(d)+"%";
+  pl.title=`${d.getDate()} de ${MES[d.getMonth()]}`;
+  pl.innerHTML=`${planeSvg}<small>${String(d.getDate()).padStart(2,"0")} ${MES[d.getMonth()]}</small><i></i>`;
+  track.appendChild(pl);
+});
+if(today>=start&&today<=end){
+  const t=document.createElement("div");t.className="today";t.style.left=pct(today)+"%";
+  t.innerHTML="<span>hoje</span>";track.appendChild(t);
+}
+
+/* agenda */
+const ag=document.getElementById("agenda");
+events.forEach(e=>{
+  const r=document.createElement("article");
+  const isPast=(e.end||e.date)<today;
+  r.className="row"+(e===next?" next":"")+(isPast?" past":"")+(e.final?" final":"");
+  const dateHtml=e.monthLabel
+    ?`<span class="d">Nov</span><span class="m">mês inteiro</span>`
+    :`<span class="d">${String(e.date.getDate()).padStart(2,"0")}</span><span class="m">${MES[e.date.getMonth()]} · ${Y}</span>`;
+  r.innerHTML=`<div class="date">${dateHtml}</div>
+    <div class="body"><span class="wk">${e.wk}</span><h3>${e.title}${e===next?'<span class="nowchip">próximo</span>':""}</h3><p>${e.desc}</p>
+    ${e.chips?`<div class="chips">${e.chips.slice(1).map(c=>`<span>${c}</span>`).join("")}</div>`:""}</div>
+    <span class="tag t-${e.c}">${e.tag}</span>`;
+  ag.appendChild(r);
+});
+/* recarrega logo após a meia-noite para atualizar a contagem */
+const nextMidnight=new Date(today.getTime()+dayMs);nextMidnight.setHours(0,0,5,0);
+setTimeout(()=>location.reload(),nextMidnight-new Date());
+document.getElementById("stamp").textContent="Atualizado automaticamente · hoje "+today.getDate()+" "+MES[today.getMonth()];
+</script>
+</body>
+</html>
