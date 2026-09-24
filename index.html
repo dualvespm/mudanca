@@ -782,6 +782,9 @@ h2{font-size:28px;font-weight:600;letter-spacing:-.02em;margin:0}
 .apt-list{display:flex;flex-direction:column;gap:20px}
 .grp h3{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin:0 0 8px;display:flex;align-items:center;gap:8px}
 .grp h3 i{width:10px;height:10px;border-radius:50%;display:block}
+.visit{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;padding:6px 8px 6px 12px;border-radius:20px;background:var(--blue-soft);color:var(--blue-ink);margin:0 0 10px;font-variant-numeric:tabular-nums}
+.visit em{font-style:normal;font-size:12px;font-weight:600;background:var(--blue);color:#fff;padding:2px 10px;border-radius:12px}
+.visit.past{background:var(--surface-2);color:var(--ink-3)} .visit.past em{background:var(--ink-3)}
 .grp-items{display:flex;flex-direction:column;gap:6px}
 .apt{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:36px 1fr auto;gap:14px;align-items:center;padding:12px 16px;border-radius:20px;background:var(--surface);transition:background .15s}
 .apt:hover,.apt.hot{background:var(--surface-2)}
@@ -1052,7 +1055,7 @@ document.getElementById("stamp").textContent="Atualizado automaticamente · hoje
 <script>
 (function(){
 const GROUPS={
-  1:{name:"Oscar Freire + Make Hommus"},
+  1:{name:"Oscar Freire + Make Hommus",visit:new Date(2026,8,29,9,0)},
   2:{name:"Atrás do cemitério"},
   3:{name:"Cardeal + Rua dos Pinheiros + Radisson"},
   4:{name:"Paraíso + Vila Mariana"},
@@ -1077,6 +1080,15 @@ const brl=n=>"R$ "+n.toLocaleString("pt-BR");
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const prices=APTS.map(a=>a.price);
+const DOW=["dom","seg","ter","qua","qui","sex","sáb"],MON=["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+function visitLabel(v){
+  const t=new Date();t.setHours(0,0,0,0);const d=new Date(v);d.setHours(0,0,0,0);
+  const n=Math.round((d-t)/864e5);
+  const rel=n===0?"hoje":n===1?"amanhã":n>1?`em ${n} dias`:"visitado";
+  const hh=String(v.getHours()).padStart(2,"0")+":"+String(v.getMinutes()).padStart(2,"0");
+  return {text:`Visita ${DOW[v.getDay()]}, ${v.getDate()} ${MON[v.getMonth()]} · ${hh}`,rel,past:n<0};
+}
+function visitChip(g){const v=GROUPS[g].visit;if(!v)return"";const l=visitLabel(v);return `<span class="visit${l.past?" past":""}"><svg width="14" height="14" viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="3" width="13" height="11.5" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M1.5 7h13M5 1.5v3M11 1.5v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>${l.text}<em>${l.rel}</em></span>`}
 document.getElementById("aptSummary").textContent=`${APTS.length} opções · 5 grupos · ${brl(Math.min(...prices))} a ${brl(Math.max(...prices))}`;
 
 /* ---------- comentários ---------- */
@@ -1119,7 +1131,7 @@ function renderList(){
         ${a.note?`<br><span class="apt-note${a.fav?" fav":""}">${a.fav?"★ ":""}${esc(a.note)}</span>`:""}</span>
         <span class="ccount">${n?`<b>${n}</b> ${n===1?"comentário":"comentários"}`:""}</span>
       </button>`;}).join("");
-    return `<div class="grp g${g}"><h3><i style="background:var(--g)"></i>Grupo ${g} · ${esc(GROUPS[g].name)}</h3><div class="grp-items">${items}</div></div>`;
+    return `<div class="grp g${g}"><h3><i style="background:var(--g)"></i>Grupo ${g} · ${esc(GROUPS[g].name)}</h3>${visitChip(g)}<div class="grp-items">${items}</div></div>`;
   }).join("");
 }
 listEl.addEventListener("click",e=>{const b=e.target.closest(".apt");if(b)openSheet(+b.dataset.id)});
@@ -1189,7 +1201,7 @@ function openSheet(id){
   const maps="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(a.addr.split(" · ").join(", ")+", São Paulo");
   sheet.innerHTML=`
     <div class="sheet-top g${a.g}"><span class="num">${a.id}</span>
-      <div><h2 id="sheetTitle">${esc(a.name)}</h2><p>Grupo ${a.g} · ${esc(GROUPS[a.g].name)}</p><p>${esc(a.addr)}</p>${a.locNote?`<p style="font-size:13px">${esc(a.locNote)}</p>`:""}</div>
+      <div><h2 id="sheetTitle">${esc(a.name)}</h2><p>Grupo ${a.g} · ${esc(GROUPS[a.g].name)}</p>${GROUPS[a.g].visit?`<p style="margin-top:8px">${visitChip(a.g)}</p>`:""}<p>${esc(a.addr)}</p>${a.locNote?`<p style="font-size:13px">${esc(a.locNote)}</p>`:""}</div>
       <button type="button" class="close" aria-label="Fechar">×</button></div>
     ${a.note?`<span class="apt-note${a.fav?" fav":""}" style="align-self:flex-start;font-size:14px;padding:6px 14px">${a.fav?"★ ":""}${esc(a.note)}</span>`:""}
     <div class="facts">
