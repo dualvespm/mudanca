@@ -1060,7 +1060,7 @@ const GROUPS={
 };
 const ZAP="https://www.zapimoveis.com.br/imovel/", QA="https://quintoandar.com.br/imovel/";
 const APTS=[
-  {id:2,g:1,name:"Oscar Freire · Sumaré",area:70,price:9527,addr:"Rua Oscar Freire · perto do metrô Sumaré",fb:[-23.5528,-46.6798],url:ZAP+"aluguel-apartamento-2-quartos-com-academia-pinheiros-zona-oeste-sao-paulo-sp-70m2-id-2906646666/",src:"Zap Imóveis",rent:7900,cond:1627,info:["2 suítes","1 vaga","Varanda envidraçada"],locNote:"O anúncio não informa o número; diz que fica perto da estação Sumaré do metrô."},
+  {id:2,g:1,name:"On Time Oscar Freire",area:70,price:9527,addr:"Ed. On Time Oscar Freire · Rua Oscar Freire, 2239 · Pinheiros",geo:"Rua Oscar Freire, 2239, Pinheiros, São Paulo",fb:[-23.5596,-46.6818],url:ZAP+"aluguel-apartamento-2-quartos-com-academia-pinheiros-zona-oeste-sao-paulo-sp-70m2-id-2906646666/",src:"Zap Imóveis",rent:7900,cond:1627,info:["2 suítes","1 vaga","Varanda envidraçada"]},
   {id:3,g:1,name:"Make Hommus",area:70,price:9599,addr:"Rua Oscar Freire, 2295 · Pinheiros",geo:"Rua Oscar Freire, 2295, Pinheiros, São Paulo",fb:[-23.5596,-46.6818],url:ZAP+"aluguel-apartamento-2-quartos-com-piscina-pinheiros-zona-oeste-sao-paulo-sp-70m2-id-2895016154/",src:"Zap Imóveis",rent:7850,cond:1696,info:["2 quartos","1 vaga","Andar alto"]},
   {id:4,g:1,name:"Make Hommus · mobiliado",area:70,price:9599,addr:"Rua Oscar Freire, 2295 · Pinheiros",geo:"Rua Oscar Freire, 2295, Pinheiros, São Paulo",fb:[-23.5596,-46.6818],note:"Mesmo prédio do nº 3 · mobiliado",url:ZAP+"aluguel-apartamento-2-quartos-mobiliado-pinheiros-zona-oeste-sao-paulo-sp-70m2-id-2904781394/",src:"Zap Imóveis",rent:7600,cond:2021,info:["2 quartos","1 vaga","8º andar"]},
   {id:5,g:2,name:"Todo branco",area:78,price:11000,addr:"Rua Arruda Alvim, 251 · Pinheiros",geo:"Rua Arruda Alvim, 251, Pinheiros, São Paulo",fb:[-23.5560,-46.6758],note:"Meu preferido · tentar negociar",fav:true,url:ZAP+"aluguel-apartamento-2-quartos-com-piscina-pinheiros-zona-oeste-sao-paulo-sp-78m2-id-2899688900/",src:"Zap Imóveis",rent:9300,cond:1700,info:["2 quartos","1 vaga","Andar alto"]},
@@ -1186,7 +1186,7 @@ const bg=document.getElementById("sheetBg"),sheet=document.getElementById("sheet
 let openId=0,lastFocus=null;
 function openSheet(id){
   const a=APTS.find(x=>x.id===id);openId=id;lastFocus=document.activeElement;
-  const maps="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(a.addr.replace(" · ",", ")+", São Paulo");
+  const maps="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(a.addr.split(" · ").join(", ")+", São Paulo");
   sheet.innerHTML=`
     <div class="sheet-top g${a.g}"><span class="num">${a.id}</span>
       <div><h2 id="sheetTitle">${esc(a.name)}</h2><p>Grupo ${a.g} · ${esc(GROUPS[a.g].name)}</p><p>${esc(a.addr)}</p>${a.locNote?`<p style="font-size:13px">${esc(a.locNote)}</p>`:""}</div>
