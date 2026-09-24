@@ -795,6 +795,11 @@ h2{font-size:28px;font-weight:600;letter-spacing:-.02em;margin:0}
 .g3 .num,.mpin.g3{color:#3c2a00}
 .apt-name{font-weight:600;font-size:16px;line-height:1.25}
 .apt-meta{font-size:14px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.thumbs{display:flex;gap:6px;margin-top:8px}
+.thumbs .th{width:64px;height:48px;object-fit:cover;border-radius:10px;background:var(--surface-2);display:block}
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;border-radius:20px;overflow:hidden}
+.gallery .ph{width:100%;aspect-ratio:3/4;object-fit:cover;display:block;background:var(--surface-2)}
+.gallery.n1{grid-template-columns:1fr}.gallery.n1 .ph{aspect-ratio:2/1}
 .apt-note{display:inline-block;font-size:12px;font-weight:500;margin-top:4px;padding:2px 10px;border-radius:12px;background:var(--yellow-soft);color:var(--yellow-ink)}
 .apt-note.fav{background:var(--red-soft);color:var(--red-ink)}
 .ccount{font-size:12px;font-family:var(--mono);color:var(--ink-3);white-space:nowrap}
@@ -1077,7 +1082,9 @@ const APTS=[
   {id:12,g:4,name:"Vila Mariana",area:69,price:9323,addr:"Rua França Pinto · Vila Mariana",geo:"Rua França Pinto, Vila Mariana, São Paulo",fb:[-23.5840,-46.6440],note:"Perto do NaAmazonia",url:QA+"893646652/",src:"QuintoAndar",rent:7108,cond:1650,info:["2 quartos (1 suíte)","1 vaga","Até o 3º andar"]},
   {id:13,g:5,name:"Estação Vila Madalena",area:70,price:9024,addr:"Rua Paulistânia · Sumarezinho",geo:"Rua Paulistânia, Sumarezinho, São Paulo",fb:[-23.5475,-46.6935],url:QA+"893340359/",src:"QuintoAndar",rent:7500,cond:1100,info:["2 suítes","1 vaga","12º a 15º andar"]}
 ];
+const PHOTOS={ "2": [ "https://resizedimgs.zapimoveis.com.br/img/vr-listing/d096ee796a735839d5510c6b8cea8bc7/apartamento-com-2-quartos-para-alugar-70m-no-pinheiros-sao-paulo.webp?action=fit-in&dimension=614x297"], "3": [ "https://resizedimgs.zapimoveis.com.br/img/vr-listing/1d2f86d9aa329c71ef6873e146ec6a84/apartamento-com-2-quartos-para-alugar-70m-no-pinheiros-sao-paulo.webp?action=fit-in&dimension=614x297"], "4": [ "https://resizedimgs.zapimoveis.com.br/img/vr-listing/befbc09e94994401e13e99d267940937/apartamento-com-2-quartos-para-alugar-70m-no-pinheiros-sao-paulo.webp?action=fit-in&dimension=614x297"], "5": [ "https://resizedimgs.zapimoveis.com.br/img/vr-listing/85e0ad0e20a8282e2a891a9466f7b45f/apartamento-com-2-quartos-para-alugar-78m-no-pinheiros-sao-paulo.webp?action=fit-in&dimension=614x297"], "6": [ "https://www.quintoandar.com.br/img/crop/portrait/300x480/original895532200-506.2278215004182IMG5540.jpg", "https://www.quintoandar.com.br/img/crop/portrait/300x480/original895532200-881.1578807720297IMG5541.jpg", "https://www.quintoandar.com.br/img/crop/portrait/300x480/original895532200-376.76829870597027IMG5547.jpg"], "7": [ "https://www.quintoandar.com.br/img/crop/portrait/300x480/original895369863-239.84077406116IMG7511.jpeg", "https://www.quintoandar.com.br/img/crop/portrait/300x480/original895369863-538.8958400387628IMG7512.jpeg", "https://www.quintoandar.com.br/img/crop/portrait/300x480/original895369863-130.34570297320903IMG7514.jpeg"], "8": [ "https://resizedimgs.zapimoveis.com.br/img/vr-listing/619d12478d3ad8b694a299a3840a7fb2/apartamento-com-2-quartos-para-alugar-102m-no-pinheiros-sao-paulo.webp?action=fit-in&dimension=614x297"], "9": [ "https://www.quintoandar.com.br/img/crop/portrait/300x480/original895054028-781.1126943614811IMG3989HDR.jpg", "https://www.quintoandar.com.br/img/crop/portrait/300x480/original895054028-349.4751372131979IMG3992HDR.jpg", "https://www.quintoandar.com.br/img/crop/portrait/300x480/original895054028-693.7568967458736IMG3995.jpg"], "10": [ "https://www.quintoandar.com.br/img/crop/portrait/300x480/original894907631-164.73259771004513MG3791.jpg", "https://www.quintoandar.com.br/img/crop/portrait/300x480/original894907631-147.15480956439808MG3793.jpg", "https://www.quintoandar.com.br/img/crop/portrait/300x480/original894907631-545.5795094489966MG3794.jpg"], "11": [ "https://www.quintoandar.com.br/img/crop/portrait/300x480/original895611685-618.3958966011289DSCF2791copy.jpg", "https://www.quintoandar.com.br/img/crop/portrait/300x480/original895611685-341.862645461084DSCF2792copy.jpg", "https://www.quintoandar.com.br/img/crop/portrait/300x480/original895611685-601.7816003055759DSCF2793copy.jpg"], "12": [ "https://www.quintoandar.com.br/img/crop/portrait/300x480/893646652-99.14476629971702MG4207.jpg", "https://www.quintoandar.com.br/img/crop/portrait/300x480/893646652-443.60321330344965MG4206.jpg", "https://www.quintoandar.com.br/img/crop/portrait/300x480/893646652-30.72404273645468MG4208.jpg"], "13": [ "https://www.quintoandar.com.br/img/crop/portrait/300x480/893340359-111.61286318035447IMG1952.jpg", "https://www.quintoandar.com.br/img/crop/portrait/300x480/893340359-844.8991497516356IMG1949.jpg", "https://www.quintoandar.com.br/img/crop/portrait/300x480/893340359-616.8701417552095IMG1954.jpg"] };
 const brl=n=>"R$ "+n.toLocaleString("pt-BR");
+const imgTag=(u,cls)=>`<img class="${cls}" src="${u}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">`;
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const prices=APTS.map(a=>a.price);
@@ -1129,6 +1136,7 @@ function renderList(){
         <span class="num">${a.id}</span>
         <span><span class="apt-name">${esc(a.name)}</span><br>
         <span class="apt-meta">${a.area} m² · ${brl(a.price)}</span>
+        ${(PHOTOS[a.id]||[]).length?`<span class="thumbs">${PHOTOS[a.id].map(u=>imgTag(u,"th")).join("")}</span>`:""}
         ${a.note?`<br><span class="apt-note${a.fav?" fav":""}">${a.fav?"★ ":""}${esc(a.note)}</span>`:""}</span>
         <span class="ccount">${n?`<b>${n}</b> ${n===1?"comentário":"comentários"}`:""}</span>
       </button>`;}).join("");
@@ -1205,6 +1213,7 @@ function openSheet(id){
       <div><h2 id="sheetTitle">${esc(a.name)}</h2><p>Grupo ${a.g} · ${esc(GROUPS[a.g].name)}</p>${GROUPS[a.g].visit?`<p style="margin-top:8px">${visitChip(a.g)}</p>`:""}<p>${esc(a.addr)}</p>${a.locNote?`<p style="font-size:13px">${esc(a.locNote)}</p>`:""}</div>
       <button type="button" class="close" aria-label="Fechar">×</button></div>
     ${a.note?`<span class="apt-note${a.fav?" fav":""}" style="align-self:flex-start;font-size:14px;padding:6px 14px">${a.fav?"★ ":""}${esc(a.note)}</span>`:""}
+    ${(PHOTOS[a.id]||[]).length?`<a class="gallery n${PHOTOS[a.id].length}" href="${a.url}" target="_blank" rel="noopener" aria-label="Fotos do anúncio">${PHOTOS[a.id].map(u=>imgTag(u,"ph")).join("")}</a>`:""}
     <div class="facts">
       <div class="fact big"><span>Valor mensal</span><b>${brl(a.price)}</b>${a.priceSrc?' <small>total do anúncio</small>':""}</div>
       <div class="fact"><span>Área</span><b>${a.area} m²</b>${a.areaSrc?' <small>do anúncio</small>':""}</div>
