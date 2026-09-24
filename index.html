@@ -800,6 +800,7 @@ h2{font-size:28px;font-weight:600;letter-spacing:-.02em;margin:0}
 .mpin.dim{opacity:.25}
 .mpin.fav::after{content:"★";position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-size:13px;color:var(--red);text-shadow:0 0 2px #fff}
 .leaflet-container{font-family:var(--sans)}
+.tiles{filter:saturate(.55) brightness(1.04) contrast(.95)}
 
 /* PAINEL */
 .sheet-bg{position:fixed;inset:0;background:rgba(15,18,24,.45);z-index:1000;display:flex;justify-content:flex-end}
@@ -1086,10 +1087,10 @@ const countFor=id=>C.list.filter(c=>c.apt===id).length;
 async function loadComments(){
   try{
     const r=await fetch(API,{cache:"no-store"});
-    if(!r.ok) throw 0;
-    const j=await r.json();
+    const j=await r.json().catch(()=>null);
+    if(!r.ok||!j){C.reason=r.status===404?"A função de comentários não foi encontrada. Confira se o arquivo está em api/comments.js no GitHub.":(j&&j.error)||("Erro "+r.status+" ao carregar os comentários.");throw 0}
     C.list=j.comments||[];C.pinRequired=!!j.pinRequired;C.online=true;
-  }catch(e){C.online=false}
+  }catch(e){C.online=false;if(!C.reason)C.reason=location.protocol==="file:"||/claude|artifact/.test(location.host)?"Os comentários funcionam no site publicado no Vercel.":"Não foi possível falar com o servidor de comentários."}
   renderList();
   if(openId) renderComments(openId);
 }
@@ -1133,7 +1134,7 @@ function spread(){
   // pinos do mesmo prédio/rua ficam lado a lado em vez de um em cima do outro
   const seen={};
   APTS.forEach(a=>{
-    const [la,lo]=pos[a.id];const k=la.toFixed(4)+","+lo.toFixed(4);
+    const [la,lo]=pos[a.id];const k=la.toFixed(3)+","+lo.toFixed(3);
     const i=seen[k]=(seen[k]||0)+1;
     if(markers[a.id]){markers[a.id].setLatLng([la,lo]);markers[a.id].setIcon(icon(a,i-1))}
   });
@@ -1143,7 +1144,7 @@ function icon(a,i=0){return L.divIcon({className:"",html:`<div class="mpin g${a.
 function initMap(){
   if(typeof L==="undefined"){document.getElementById("map").innerHTML='<p class="offline" style="margin:16px">Não foi possível carregar o mapa.</p>';return}
   map=L.map("map",{scrollWheelZoom:false,zoomControl:true});
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",{maxZoom:19,subdomains:"abcd",attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'}).addTo(map);
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,className:"tiles",attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);
   APTS.forEach(a=>{
     const m=L.marker(pos[a.id],{icon:icon(a),title:`${a.id}. ${a.name}`,keyboard:true}).addTo(map);
     m.on("click",()=>openSheet(a.id));
@@ -1220,7 +1221,7 @@ function renderComments(id){
     :`<p class="empty">${C.online===false?"":"Nenhum comentário ainda. Seja o primeiro a anotar algo sobre este apartamento."}</p>`;
   const name=store.get("mud:name")||"";
   const form=C.online===false
-    ?`<p class="offline">Os comentários funcionam no site publicado no Vercel, depois que o banco de dados estiver conectado.</p>`
+    ?`<p class="offline">${esc(C.reason||"Os comentários funcionam no site publicado no Vercel.")}</p>`
     :`<form class="cform" id="cForm" novalidate>
         <label for="cName">Seu nome</label><input id="cName" maxlength="40" autocomplete="name" value="${esc(name)}" required>
         <label for="cText">Comentário</label><textarea id="cText" maxlength="1000" placeholder="Ex.: sala bem iluminada, barulho da rua, dá para negociar…" required></textarea>
