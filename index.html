@@ -736,6 +736,7 @@ h2{font-size:28px;font-weight:600;letter-spacing:-.02em;margin:0}
 .pin small{position:absolute;top:40px;white-space:nowrap;font-family:var(--mono);font-size:12px;color:var(--ink-2)}
 .plane{position:absolute;top:26px;bottom:60px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;z-index:1}
 .plane svg{width:52px;height:auto;display:block;animation:bob 3.2s ease-in-out infinite}
+.plane .flip{display:block;transform:scaleX(-1)}
 .plane small{font-family:var(--mono);font-size:11px;color:var(--ink-3);white-space:nowrap;line-height:1.2}
 .plane i{flex:1;width:0;border-left:2px dotted var(--line);margin-top:3px}
 @keyframes bob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-3px) rotate(-1deg)}}
@@ -1021,10 +1022,10 @@ const planeSvg=`<svg viewBox="0 -6 60 44" aria-hidden="true">
   <ellipse cx="53.5" cy="23" rx="1.6" ry="7" fill="#9aa0a6"/>
   <circle cx="52.5" cy="23" r="1.8" fill="#34a853"/>
 </svg>`;
-[D(10,6),D(10,14),D(11,15),D(11,22)].forEach(d=>{
+[[D(10,6),0],[D(10,14),1],[D(11,15),0],[D(11,22),1]].forEach(([d,back])=>{
   const pl=document.createElement("div");pl.className="plane";pl.style.left=pct(d)+"%";
   pl.title=`${d.getDate()} de ${MES[d.getMonth()]}`;
-  pl.innerHTML=`${planeSvg}<small>${String(d.getDate()).padStart(2,"0")} ${MES[d.getMonth()]}</small><i></i>`;
+  pl.innerHTML=`<span class="${back?"flip":""}">${planeSvg}</span><small>${String(d.getDate()).padStart(2,"0")} ${MES[d.getMonth()]}</small><i></i>`;
   track.appendChild(pl);
 });
 if(today>=start&&today<=end){
