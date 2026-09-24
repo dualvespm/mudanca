@@ -2,17 +2,679 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="Cronograma da mudança de apartamento — setembro a dezembro de 2026.">
 <title>Cronograma de Mudança</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,400..700&family=Google+Sans+Code:wght@400;500&display=swap">
 <style>
+/* required styles */
+
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container,
+.leaflet-pane > svg,
+.leaflet-pane > canvas,
+.leaflet-zoom-box,
+.leaflet-image-layer,
+.leaflet-layer {
+	position: absolute;
+	left: 0;
+	top: 0;
+	}
+.leaflet-container {
+	overflow: hidden;
+	}
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	-webkit-user-select: none;
+	   -moz-user-select: none;
+	        user-select: none;
+	  -webkit-user-drag: none;
+	}
+/* Prevents IE11 from highlighting tiles in blue */
+.leaflet-tile::selection {
+	background: transparent;
+}
+/* Safari renders non-retina tile on retina better with this, but Chrome is worse */
+.leaflet-safari .leaflet-tile {
+	image-rendering: -webkit-optimize-contrast;
+	}
+/* hack that prevents hw layers "stretching" when loading new tiles */
+.leaflet-safari .leaflet-tile-container {
+	width: 1600px;
+	height: 1600px;
+	-webkit-transform-origin: 0 0;
+	}
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	display: block;
+	}
+/* .leaflet-container svg: reset svg max-width decleration shipped in Joomla! (joomla.org) 3.x */
+/* .leaflet-container img: map is broken in FF if you have max-width: 100% on tiles */
+.leaflet-container .leaflet-overlay-pane svg {
+	max-width: none !important;
+	max-height: none !important;
+	}
+.leaflet-container .leaflet-marker-pane img,
+.leaflet-container .leaflet-shadow-pane img,
+.leaflet-container .leaflet-tile-pane img,
+.leaflet-container img.leaflet-image-layer,
+.leaflet-container .leaflet-tile {
+	max-width: none !important;
+	max-height: none !important;
+	width: auto;
+	padding: 0;
+	}
+
+.leaflet-container img.leaflet-tile {
+	/* See: https://bugs.chromium.org/p/chromium/issues/detail?id=600120 */
+	mix-blend-mode: plus-lighter;
+}
+
+.leaflet-container.leaflet-touch-zoom {
+	-ms-touch-action: pan-x pan-y;
+	touch-action: pan-x pan-y;
+	}
+.leaflet-container.leaflet-touch-drag {
+	-ms-touch-action: pinch-zoom;
+	/* Fallback for FF which doesn't support pinch-zoom */
+	touch-action: none;
+	touch-action: pinch-zoom;
+}
+.leaflet-container.leaflet-touch-drag.leaflet-touch-zoom {
+	-ms-touch-action: none;
+	touch-action: none;
+}
+.leaflet-container {
+	-webkit-tap-highlight-color: transparent;
+}
+.leaflet-container a {
+	-webkit-tap-highlight-color: rgba(51, 181, 229, 0.4);
+}
+.leaflet-tile {
+	filter: inherit;
+	visibility: hidden;
+	}
+.leaflet-tile-loaded {
+	visibility: inherit;
+	}
+.leaflet-zoom-box {
+	width: 0;
+	height: 0;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	z-index: 800;
+	}
+/* workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=888319 */
+.leaflet-overlay-pane svg {
+	-moz-user-select: none;
+	}
+
+.leaflet-pane         { z-index: 400; }
+
+.leaflet-tile-pane    { z-index: 200; }
+.leaflet-overlay-pane { z-index: 400; }
+.leaflet-shadow-pane  { z-index: 500; }
+.leaflet-marker-pane  { z-index: 600; }
+.leaflet-tooltip-pane   { z-index: 650; }
+.leaflet-popup-pane   { z-index: 700; }
+
+.leaflet-map-pane canvas { z-index: 100; }
+.leaflet-map-pane svg    { z-index: 200; }
+
+.leaflet-vml-shape {
+	width: 1px;
+	height: 1px;
+	}
+.lvml {
+	behavior: url(#default#VML);
+	display: inline-block;
+	position: absolute;
+	}
+
+
+/* control positioning */
+
+.leaflet-control {
+	position: relative;
+	z-index: 800;
+	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	pointer-events: auto;
+	}
+.leaflet-top,
+.leaflet-bottom {
+	position: absolute;
+	z-index: 1000;
+	pointer-events: none;
+	}
+.leaflet-top {
+	top: 0;
+	}
+.leaflet-right {
+	right: 0;
+	}
+.leaflet-bottom {
+	bottom: 0;
+	}
+.leaflet-left {
+	left: 0;
+	}
+.leaflet-control {
+	float: left;
+	clear: both;
+	}
+.leaflet-right .leaflet-control {
+	float: right;
+	}
+.leaflet-top .leaflet-control {
+	margin-top: 10px;
+	}
+.leaflet-bottom .leaflet-control {
+	margin-bottom: 10px;
+	}
+.leaflet-left .leaflet-control {
+	margin-left: 10px;
+	}
+.leaflet-right .leaflet-control {
+	margin-right: 10px;
+	}
+
+
+/* zoom and fade animations */
+
+.leaflet-fade-anim .leaflet-popup {
+	opacity: 0;
+	-webkit-transition: opacity 0.2s linear;
+	   -moz-transition: opacity 0.2s linear;
+	        transition: opacity 0.2s linear;
+	}
+.leaflet-fade-anim .leaflet-map-pane .leaflet-popup {
+	opacity: 1;
+	}
+.leaflet-zoom-animated {
+	-webkit-transform-origin: 0 0;
+	    -ms-transform-origin: 0 0;
+	        transform-origin: 0 0;
+	}
+svg.leaflet-zoom-animated {
+	will-change: transform;
+}
+
+.leaflet-zoom-anim .leaflet-zoom-animated {
+	-webkit-transition: -webkit-transform 0.25s cubic-bezier(0,0,0.25,1);
+	   -moz-transition:    -moz-transform 0.25s cubic-bezier(0,0,0.25,1);
+	        transition:         transform 0.25s cubic-bezier(0,0,0.25,1);
+	}
+.leaflet-zoom-anim .leaflet-tile,
+.leaflet-pan-anim .leaflet-tile {
+	-webkit-transition: none;
+	   -moz-transition: none;
+	        transition: none;
+	}
+
+.leaflet-zoom-anim .leaflet-zoom-hide {
+	visibility: hidden;
+	}
+
+
+/* cursors */
+
+.leaflet-interactive {
+	cursor: pointer;
+	}
+.leaflet-grab {
+	cursor: -webkit-grab;
+	cursor:    -moz-grab;
+	cursor:         grab;
+	}
+.leaflet-crosshair,
+.leaflet-crosshair .leaflet-interactive {
+	cursor: crosshair;
+	}
+.leaflet-popup-pane,
+.leaflet-control {
+	cursor: auto;
+	}
+.leaflet-dragging .leaflet-grab,
+.leaflet-dragging .leaflet-grab .leaflet-interactive,
+.leaflet-dragging .leaflet-marker-draggable {
+	cursor: move;
+	cursor: -webkit-grabbing;
+	cursor:    -moz-grabbing;
+	cursor:         grabbing;
+	}
+
+/* marker & overlays interactivity */
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-image-layer,
+.leaflet-pane > svg path,
+.leaflet-tile-container {
+	pointer-events: none;
+	}
+
+.leaflet-marker-icon.leaflet-interactive,
+.leaflet-image-layer.leaflet-interactive,
+.leaflet-pane > svg path.leaflet-interactive,
+svg.leaflet-image-layer.leaflet-interactive path {
+	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	pointer-events: auto;
+	}
+
+/* visual tweaks */
+
+.leaflet-container {
+	background: #ddd;
+	outline-offset: 1px;
+	}
+.leaflet-container a {
+	color: #0078A8;
+	}
+.leaflet-zoom-box {
+	border: 2px dotted #38f;
+	background: rgba(255,255,255,0.5);
+	}
+
+
+/* general typography */
+.leaflet-container {
+	font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-size: 0.75rem;
+	line-height: 1.5;
+	}
+
+
+/* general toolbar styles */
+
+.leaflet-bar {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+	border-radius: 4px;
+	}
+.leaflet-bar a {
+	background-color: #fff;
+	border-bottom: 1px solid #ccc;
+	width: 26px;
+	height: 26px;
+	line-height: 26px;
+	display: block;
+	text-align: center;
+	text-decoration: none;
+	color: black;
+	}
+.leaflet-bar a,
+.leaflet-control-layers-toggle {
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	display: block;
+	}
+.leaflet-bar a:hover,
+.leaflet-bar a:focus {
+	background-color: #f4f4f4;
+	}
+.leaflet-bar a:first-child {
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	}
+.leaflet-bar a:last-child {
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	border-bottom: none;
+	}
+.leaflet-bar a.leaflet-disabled {
+	cursor: default;
+	background-color: #f4f4f4;
+	color: #bbb;
+	}
+
+.leaflet-touch .leaflet-bar a {
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	}
+.leaflet-touch .leaflet-bar a:first-child {
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
+	}
+.leaflet-touch .leaflet-bar a:last-child {
+	border-bottom-left-radius: 2px;
+	border-bottom-right-radius: 2px;
+	}
+
+/* zoom control */
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+	font: bold 18px 'Lucida Console', Monaco, monospace;
+	text-indent: 1px;
+	}
+
+.leaflet-touch .leaflet-control-zoom-in, .leaflet-touch .leaflet-control-zoom-out  {
+	font-size: 22px;
+	}
+
+
+/* layers control */
+
+.leaflet-control-layers {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+	background: #fff;
+	border-radius: 5px;
+	}
+.leaflet-control-layers-toggle {
+	background-image: url(images/layers.png);
+	width: 36px;
+	height: 36px;
+	}
+.leaflet-retina .leaflet-control-layers-toggle {
+	background-image: url(images/layers-2x.png);
+	background-size: 26px 26px;
+	}
+.leaflet-touch .leaflet-control-layers-toggle {
+	width: 44px;
+	height: 44px;
+	}
+.leaflet-control-layers .leaflet-control-layers-list,
+.leaflet-control-layers-expanded .leaflet-control-layers-toggle {
+	display: none;
+	}
+.leaflet-control-layers-expanded .leaflet-control-layers-list {
+	display: block;
+	position: relative;
+	}
+.leaflet-control-layers-expanded {
+	padding: 6px 10px 6px 6px;
+	color: #333;
+	background: #fff;
+	}
+.leaflet-control-layers-scrollbar {
+	overflow-y: scroll;
+	overflow-x: hidden;
+	padding-right: 5px;
+	}
+.leaflet-control-layers-selector {
+	margin-top: 2px;
+	position: relative;
+	top: 1px;
+	}
+.leaflet-control-layers label {
+	display: block;
+	font-size: 13px;
+	font-size: 1.08333em;
+	}
+.leaflet-control-layers-separator {
+	height: 0;
+	border-top: 1px solid #ddd;
+	margin: 5px -10px 5px -6px;
+	}
+
+/* Default icon URLs */
+.leaflet-default-icon-path { /* used only in path-guessing heuristic, see L.Icon.Default */
+	background-image: url(images/marker-icon.png);
+	}
+
+
+/* attribution and scale controls */
+
+.leaflet-container .leaflet-control-attribution {
+	background: #fff;
+	background: rgba(255, 255, 255, 0.8);
+	margin: 0;
+	}
+.leaflet-control-attribution,
+.leaflet-control-scale-line {
+	padding: 0 5px;
+	color: #333;
+	line-height: 1.4;
+	}
+.leaflet-control-attribution a {
+	text-decoration: none;
+	}
+.leaflet-control-attribution a:hover,
+.leaflet-control-attribution a:focus {
+	text-decoration: underline;
+	}
+.leaflet-attribution-flag {
+	display: inline !important;
+	vertical-align: baseline !important;
+	width: 1em;
+	height: 0.6669em;
+	}
+.leaflet-left .leaflet-control-scale {
+	margin-left: 5px;
+	}
+.leaflet-bottom .leaflet-control-scale {
+	margin-bottom: 5px;
+	}
+.leaflet-control-scale-line {
+	border: 2px solid #777;
+	border-top: none;
+	line-height: 1.1;
+	padding: 2px 5px 1px;
+	white-space: nowrap;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	background: rgba(255, 255, 255, 0.8);
+	text-shadow: 1px 1px #fff;
+	}
+.leaflet-control-scale-line:not(:first-child) {
+	border-top: 2px solid #777;
+	border-bottom: none;
+	margin-top: -2px;
+	}
+.leaflet-control-scale-line:not(:first-child):not(:last-child) {
+	border-bottom: 2px solid #777;
+	}
+
+.leaflet-touch .leaflet-control-attribution,
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	box-shadow: none;
+	}
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	border: 2px solid rgba(0,0,0,0.2);
+	background-clip: padding-box;
+	}
+
+
+/* popup */
+
+.leaflet-popup {
+	position: absolute;
+	text-align: center;
+	margin-bottom: 20px;
+	}
+.leaflet-popup-content-wrapper {
+	padding: 1px;
+	text-align: left;
+	border-radius: 12px;
+	}
+.leaflet-popup-content {
+	margin: 13px 24px 13px 20px;
+	line-height: 1.3;
+	font-size: 13px;
+	font-size: 1.08333em;
+	min-height: 1px;
+	}
+.leaflet-popup-content p {
+	margin: 17px 0;
+	margin: 1.3em 0;
+	}
+.leaflet-popup-tip-container {
+	width: 40px;
+	height: 20px;
+	position: absolute;
+	left: 50%;
+	margin-top: -1px;
+	margin-left: -20px;
+	overflow: hidden;
+	pointer-events: none;
+	}
+.leaflet-popup-tip {
+	width: 17px;
+	height: 17px;
+	padding: 1px;
+
+	margin: -10px auto 0;
+	pointer-events: auto;
+
+	-webkit-transform: rotate(45deg);
+	   -moz-transform: rotate(45deg);
+	    -ms-transform: rotate(45deg);
+	        transform: rotate(45deg);
+	}
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+	background: white;
+	color: #333;
+	box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+	}
+.leaflet-container a.leaflet-popup-close-button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	border: none;
+	text-align: center;
+	width: 24px;
+	height: 24px;
+	font: 16px/24px Tahoma, Verdana, sans-serif;
+	color: #757575;
+	text-decoration: none;
+	background: transparent;
+	}
+.leaflet-container a.leaflet-popup-close-button:hover,
+.leaflet-container a.leaflet-popup-close-button:focus {
+	color: #585858;
+	}
+.leaflet-popup-scrolled {
+	overflow: auto;
+	}
+
+.leaflet-oldie .leaflet-popup-content-wrapper {
+	-ms-zoom: 1;
+	}
+.leaflet-oldie .leaflet-popup-tip {
+	width: 24px;
+	margin: 0 auto;
+
+	-ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678)";
+	filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678);
+	}
+
+.leaflet-oldie .leaflet-control-zoom,
+.leaflet-oldie .leaflet-control-layers,
+.leaflet-oldie .leaflet-popup-content-wrapper,
+.leaflet-oldie .leaflet-popup-tip {
+	border: 1px solid #999;
+	}
+
+
+/* div icon */
+
+.leaflet-div-icon {
+	background: #fff;
+	border: 1px solid #666;
+	}
+
+
+/* Tooltip */
+/* Base styles for the element that has a tooltip */
+.leaflet-tooltip {
+	position: absolute;
+	padding: 6px;
+	background-color: #fff;
+	border: 1px solid #fff;
+	border-radius: 3px;
+	color: #222;
+	white-space: nowrap;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	pointer-events: none;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+	}
+.leaflet-tooltip.leaflet-interactive {
+	cursor: pointer;
+	pointer-events: auto;
+	}
+.leaflet-tooltip-top:before,
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	position: absolute;
+	pointer-events: none;
+	border: 6px solid transparent;
+	background: transparent;
+	content: "";
+	}
+
+/* Directions */
+
+.leaflet-tooltip-bottom {
+	margin-top: 6px;
+}
+.leaflet-tooltip-top {
+	margin-top: -6px;
+}
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-top:before {
+	left: 50%;
+	margin-left: -6px;
+	}
+.leaflet-tooltip-top:before {
+	bottom: 0;
+	margin-bottom: -12px;
+	border-top-color: #fff;
+	}
+.leaflet-tooltip-bottom:before {
+	top: 0;
+	margin-top: -12px;
+	margin-left: -6px;
+	border-bottom-color: #fff;
+	}
+.leaflet-tooltip-left {
+	margin-left: -6px;
+}
+.leaflet-tooltip-right {
+	margin-left: 6px;
+}
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	top: 50%;
+	margin-top: -6px;
+	}
+.leaflet-tooltip-left:before {
+	right: 0;
+	margin-right: -12px;
+	border-left-color: #fff;
+	}
+.leaflet-tooltip-right:before {
+	left: 0;
+	margin-left: -12px;
+	border-right-color: #fff;
+	}
+
+/* Printing */
+
+@media print {
+	/* Prevent printers from removing background-images of controls. */
+	.leaflet-control {
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+		}
+	}
+
 :root{
   --bg:#ffffff; --surface:#f1f4f9; --surface-2:#e8edf5; --ink:#1f1f1f; --ink-2:#444746; --ink-3:#6b7079;
   --line:#dde3ec;
-  --blue:#4285f4; --red:#ea4335; --yellow:#fbbc04; --green:#34a853;
+  --blue:#4285f4; --red:#ea4335; --yellow:#fbbc04; --green:#34a853; --purple:#a142f4;
   --blue-soft:#d3e3fd; --red-soft:#fce8e6; --yellow-soft:#fef7e0; --green-soft:#e6f4ea;
   --blue-ink:#0b57d0; --red-ink:#b3261e; --yellow-ink:#8a5a00; --green-ink:#146c2e;
   --sans:"Google Sans Flex","Google Sans","Roboto",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -33,6 +695,7 @@
   --blue-ink:#a8c7fa; --red-ink:#f2b8b5; --yellow-ink:#fdd663; --green-ink:#81c995;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{margin:0;-webkit-font-smoothing:antialiased;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;padding-inline:20px;padding-block:32px 64px}
 .wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:56px}
 
@@ -106,6 +769,76 @@ h2{font-size:28px;font-weight:600;letter-spacing:-.02em;margin:0}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .chips span{font-size:13px;padding:6px 14px;border-radius:20px;border:1px solid var(--line);color:var(--ink-2);background:var(--bg)}
 
+/* APARTAMENTOS */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.filters button{font:inherit;font-size:14px;font-weight:500;padding:8px 16px;border-radius:20px;border:1px solid var(--line);background:var(--bg);color:var(--ink-2);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.filters button i{width:10px;height:10px;border-radius:50%;display:block}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.filters button:focus-visible,.apt:focus-visible,.btn:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.apt-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:16px;align-items:start}
+.map-card{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);border-radius:28px;overflow:hidden;background:var(--surface);display:flex;flex-direction:column}
+#map{height:560px;width:100%;background:var(--surface-2)}
+.map-note{margin:0;padding:10px 18px;font-size:12px;color:var(--ink-3)}
+.apt-list{display:flex;flex-direction:column;gap:20px}
+.grp h3{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);margin:0 0 8px;display:flex;align-items:center;gap:8px}
+.grp h3 i{width:10px;height:10px;border-radius:50%;display:block}
+.grp-items{display:flex;flex-direction:column;gap:6px}
+.apt{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:36px 1fr auto;gap:14px;align-items:center;padding:12px 16px;border-radius:20px;background:var(--surface);transition:background .15s}
+.apt:hover,.apt.hot{background:var(--surface-2)}
+.num{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:15px;color:#fff;font-variant-numeric:tabular-nums}
+.g1{--g:var(--blue)} .g2{--g:var(--red)} .g3{--g:var(--yellow)} .g4{--g:var(--green)} .g5{--g:var(--purple)}
+.num,.mpin{background:var(--g)}
+.g3 .num,.mpin.g3{color:#3c2a00}
+.apt-name{font-weight:600;font-size:16px;line-height:1.25}
+.apt-meta{font-size:14px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.apt-note{display:inline-block;font-size:12px;font-weight:500;margin-top:4px;padding:2px 10px;border-radius:12px;background:var(--yellow-soft);color:var(--yellow-ink)}
+.apt-note.fav{background:var(--red-soft);color:var(--red-ink)}
+.ccount{font-size:12px;font-family:var(--mono);color:var(--ink-3);white-space:nowrap}
+.ccount b{color:var(--blue-ink);font-weight:500}
+.mpin{position:relative;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;font:600 13px/1 var(--sans);border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);transition:transform .15s}
+.mpin.hot{transform:scale(1.25)}
+.mpin.dim{opacity:.25}
+.mpin.fav::after{content:"★";position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-size:13px;color:var(--red);text-shadow:0 0 2px #fff}
+.leaflet-container{font-family:var(--sans)}
+
+/* PAINEL */
+.sheet-bg{position:fixed;inset:0;background:rgba(15,18,24,.45);z-index:1000;display:flex;justify-content:flex-end}
+.sheet{background:var(--bg);width:min(520px,100%);height:100%;overflow-y:auto;padding:28px 24px calc(28px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:22px;box-shadow:-8px 0 32px rgba(0,0,0,.2)}
+.sheet-top{display:flex;gap:14px;align-items:flex-start}
+.sheet-top .num{width:48px;height:48px;font-size:20px;flex:none}
+.sheet-top h2{font-size:26px}
+.sheet-top p{margin:2px 0 0;color:var(--ink-3);font-size:14px}
+.close{margin-left:auto;flex:none;width:40px;height:40px;border-radius:50%;border:0;background:var(--surface);color:var(--ink);font-size:20px;cursor:pointer}
+.facts{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.fact{background:var(--surface);border-radius:16px;padding:12px 14px}
+.fact span{display:block;font-size:12px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em}
+.fact b{font-size:18px;font-weight:600;font-variant-numeric:tabular-nums}
+.fact.big{grid-column:1/-1;background:var(--blue-soft)}
+.fact.big b{font-size:28px;color:var(--blue-ink)}
+.fact small{font-size:12px;color:var(--ink-3)}
+.links{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font:inherit;font-size:14px;font-weight:500;padding:10px 18px;border-radius:20px;border:1px solid var(--line);background:var(--bg);color:var(--blue-ink);text-decoration:none;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn:disabled{opacity:.5;cursor:default}
+.src{font-size:12px;color:var(--ink-3);margin:-12px 0 0}
+.comments h3{font-size:18px;margin:0 0 12px;font-weight:600}
+.clist{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.cmt{background:var(--surface);border-radius:18px;padding:12px 16px}
+.cmt header{display:flex;justify-content:space-between;gap:8px;font-size:13px;margin-bottom:4px}
+.cmt header b{font-weight:600}
+.cmt header span{color:var(--ink-3);font-family:var(--mono);font-size:12px}
+.cmt p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.cmt .del{all:unset;cursor:pointer;font-size:12px;color:var(--red-ink);margin-top:6px;display:inline-block}
+.empty{color:var(--ink-3);font-size:14px;margin:0}
+.cform{display:flex;flex-direction:column;gap:10px}
+.cform label{font-size:13px;font-weight:500;color:var(--ink-2)}
+.cform input,.cform textarea{font:inherit;font-size:15px;width:100%;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.cform input:focus,.cform textarea:focus{outline:2px solid var(--blue);border-color:transparent}
+.cform textarea{min-height:96px;resize:vertical}
+.msg{font-size:13px;margin:0;min-height:1em}
+.msg.err{color:var(--red-ink)} .msg.ok{color:var(--green-ink)}
+.offline{font-size:14px;background:var(--yellow-soft);color:var(--yellow-ink);padding:12px 16px;border-radius:16px;margin:0}
+
 footer{font-size:13px;color:var(--ink-3);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:20px}
 
 @media (max-width:760px){
@@ -115,12 +848,16 @@ footer{font-size:13px;color:var(--ink-3);display:flex;justify-content:space-betw
   .row{grid-template-columns:1fr;gap:10px;padding:20px}
   .date{flex-direction:row;align-items:baseline;gap:10px}
   .tag{justify-self:start}
+  .apt-grid{grid-template-columns:1fr}
+  .map-card{position:relative;top:0}
+  #map{height:380px}
+  .sheet-bg{align-items:flex-end}
+  .sheet{height:auto;max-height:92%;border-radius:28px 28px 0 0}
 }
 @media (prefers-reduced-motion:reduce){.row{transition:none}.row:hover{transform:none}}
 </style>
 </head>
 <body>
-
 <div class="wrap">
   <header class="hero">
     <div>
@@ -196,9 +933,23 @@ footer{font-size:13px;color:var(--ink-3);display:flex;justify-content:space-betw
     <div class="agenda" id="agenda"></div>
   </section>
 
+  <section id="apartamentos">
+    <div class="sec-h"><h2>Apartamentos</h2><span class="legend" id="aptSummary">13 opções · 5 grupos de visita</span></div>
+    <div class="filters" id="filters" role="group" aria-label="Filtrar por grupo"></div>
+    <div class="apt-grid">
+      <div class="map-card"><div id="map" aria-label="Mapa de São Paulo com os apartamentos"></div><p class="map-note">Pinos posicionados pela rua do anúncio; a localização é aproximada.</p></div>
+      <div class="apt-list" id="aptList"></div>
+    </div>
+  </section>
+
   <footer><span>Mudança 2026 · Eduardo Alves</span><span id="stamp"></span></footer>
 </div>
 
+<div class="sheet-bg" id="sheetBg" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" id="sheet"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script>
 const Y=2026;
 const D=(m,d)=>new Date(Y,m-1,d);
@@ -296,6 +1047,223 @@ events.forEach(e=>{
 const nextMidnight=new Date(today.getTime()+dayMs);nextMidnight.setHours(0,0,5,0);
 setTimeout(()=>location.reload(),nextMidnight-new Date());
 document.getElementById("stamp").textContent="Atualizado automaticamente · hoje "+today.getDate()+" "+MES[today.getMonth()];
+</script>
+<script>
+(function(){
+const GROUPS={
+  1:{name:"João Moura + Make Hommus"},
+  2:{name:"Atrás do cemitério"},
+  3:{name:"Cardeal + Rua dos Pinheiros + Radisson"},
+  4:{name:"Paraíso + Vila Mariana"},
+  5:{name:"Vila Madalena"}
+};
+const ZAP="https://www.zapimoveis.com.br/imovel/", QA="https://quintoandar.com.br/imovel/";
+const APTS=[
+  {id:1,g:1,name:"João Moura",area:73,price:8400,addr:"Rua João Moura, 2370 · Pinheiros",geo:"Rua João Moura, 2370, Pinheiros, São Paulo",fb:[-23.5578,-46.6862],url:ZAP+"aluguel-apartamento-2-quartos-com-piscina-pinheiros-zona-oeste-sao-paulo-sp-73m2-id-2896748780/",src:"Zap Imóveis",rent:7300,cond:1100,info:["2 quartos","1 vaga","11º andar"]},
+  {id:2,g:1,name:"João Moura",area:70,price:9527,addr:"Rua João Moura, 2370 · Pinheiros",geo:"Rua João Moura, 2370, Pinheiros, São Paulo",fb:[-23.5578,-46.6862],note:"Mesmo prédio do nº 1",url:ZAP+"aluguel-apartamento-2-quartos-com-academia-pinheiros-zona-oeste-sao-paulo-sp-70m2-id-2906646666/",src:"Zap Imóveis",rent:7900,cond:1627,info:["2 suítes","1 vaga","Varanda"]},
+  {id:3,g:1,name:"Make Hommus",area:70,price:9599,addr:"Rua Oscar Freire, 2295 · Pinheiros",geo:"Rua Oscar Freire, 2295, Pinheiros, São Paulo",fb:[-23.5596,-46.6818],url:ZAP+"aluguel-apartamento-2-quartos-com-piscina-pinheiros-zona-oeste-sao-paulo-sp-70m2-id-2895016154/",src:"Zap Imóveis",rent:7850,cond:1696,info:["2 quartos","1 vaga","Andar alto"]},
+  {id:4,g:1,name:"Make Hommus · mobiliado",area:70,price:9599,addr:"Rua Oscar Freire, 2295 · Pinheiros",geo:"Rua Oscar Freire, 2295, Pinheiros, São Paulo",fb:[-23.5596,-46.6818],note:"Mesmo prédio do nº 3 · mobiliado",url:ZAP+"aluguel-apartamento-2-quartos-mobiliado-pinheiros-zona-oeste-sao-paulo-sp-70m2-id-2904781394/",src:"Zap Imóveis",rent:7600,cond:2021,info:["2 quartos","1 vaga","8º andar"]},
+  {id:5,g:2,name:"Todo branco",area:78,price:11000,addr:"Rua Arruda Alvim, 251 · Pinheiros",geo:"Rua Arruda Alvim, 251, Pinheiros, São Paulo",fb:[-23.5560,-46.6758],note:"Meu preferido · tentar negociar",fav:true,url:ZAP+"aluguel-apartamento-2-quartos-com-piscina-pinheiros-zona-oeste-sao-paulo-sp-78m2-id-2899688900/",src:"Zap Imóveis",rent:9300,cond:1700,info:["2 quartos","1 vaga","Andar alto"]},
+  {id:6,g:2,name:"Painel vermelho",area:78,price:10215,addr:"Rua Arruda Alvim · Pinheiros",geo:"Rua Arruda Alvim, Pinheiros, São Paulo",fb:[-23.5560,-46.6758],url:QA+"895532200/",src:"QuintoAndar",rent:8440,cond:1200,info:["2 suítes","1 vaga","8º a 11º andar"]},
+  {id:7,g:2,name:"Arruda Alvim",area:78,price:12480,addr:"Rua Arruda Alvim · Pinheiros",geo:"Rua Arruda Alvim, Pinheiros, São Paulo",fb:[-23.5560,-46.6758],url:QA+"895369863/",src:"QuintoAndar",rent:10500,cond:1200,info:["2 suítes","1 vaga","12º a 15º andar"]},
+  {id:8,g:3,name:"Rua Cardeal",area:100,price:8482,addr:"Rua Cardeal Arcoverde, 1626 · Pinheiros",geo:"Rua Cardeal Arcoverde, 1626, Pinheiros, São Paulo",fb:[-23.5600,-46.6830],url:ZAP+"aluguel-apartamento-2-quartos-com-piscina-pinheiros-zona-oeste-sao-paulo-sp-102m2-id-2910742620/",src:"Zap Imóveis",rent:7200,cond:1282,info:["2 quartos (1 suíte)","2 vagas","10º andar"]},
+  {id:9,g:3,name:"Rua dos Pinheiros",area:69,price:10830,addr:"Rua dos Pinheiros · Pinheiros",fb:[-23.5652,-46.6838],note:"Perto do Cabana Burger",url:QA+"895054028/",src:"QuintoAndar",rent:9000,cond:1227,info:["2 quartos (1 suíte)","1 vaga","8º a 11º andar"]},
+  {id:10,g:3,name:"Perto do Radisson",area:75,areaSrc:true,price:9427,addr:"Rua Cristiano Viana · Pinheiros",geo:"Rua Cristiano Viana, Pinheiros, São Paulo",fb:[-23.5585,-46.6790],note:"Sem fogão e geladeira",url:QA+"894907631/",src:"QuintoAndar",rent:7400,cond:1350,info:["2 quartos (1 suíte)","1 vaga","8º a 11º andar"]},
+  {id:11,g:4,name:"Dois pavimentos",area:80,price:10929,priceSrc:true,addr:"Rua Salto · Paraíso",geo:"Rua Salto, Paraíso, São Paulo",fb:[-23.5790,-46.6480],note:"Nós dois gostamos",fav:true,url:QA+"895611685/",src:"QuintoAndar",rent:7500,cond:2197,info:["2 quartos","2 vagas","12º a 15º andar"]},
+  {id:12,g:4,name:"Vila Mariana",area:69,price:9323,addr:"Rua França Pinto · Vila Mariana",geo:"Rua França Pinto, Vila Mariana, São Paulo",fb:[-23.5840,-46.6440],note:"Perto do NaAmazonia",url:QA+"893646652/",src:"QuintoAndar",rent:7108,cond:1650,info:["2 quartos (1 suíte)","1 vaga","Até o 3º andar"]},
+  {id:13,g:5,name:"Estação Vila Madalena",area:70,price:9024,addr:"Rua Paulistânia · Sumarezinho",geo:"Rua Paulistânia, Sumarezinho, São Paulo",fb:[-23.5475,-46.6935],url:QA+"893340359/",src:"QuintoAndar",rent:7500,cond:1100,info:["2 suítes","1 vaga","12º a 15º andar"]}
+];
+const brl=n=>"R$ "+n.toLocaleString("pt-BR");
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const prices=APTS.map(a=>a.price);
+document.getElementById("aptSummary").textContent=`${APTS.length} opções · 5 grupos · ${brl(Math.min(...prices))} a ${brl(Math.max(...prices))}`;
+
+/* ---------- comentários ---------- */
+const API="/api/comments";
+const C={list:[],pinRequired:false,online:null,mine:store.get("mud:mine")||{}};
+const countFor=id=>C.list.filter(c=>c.apt===id).length;
+async function loadComments(){
+  try{
+    const r=await fetch(API,{cache:"no-store"});
+    if(!r.ok) throw 0;
+    const j=await r.json();
+    C.list=j.comments||[];C.pinRequired=!!j.pinRequired;C.online=true;
+  }catch(e){C.online=false}
+  renderList();
+  if(openId) renderComments(openId);
+}
+
+/* ---------- filtros ---------- */
+let filter=0;
+const fEl=document.getElementById("filters");
+function renderFilters(){
+  fEl.innerHTML=`<button type="button" data-g="0" aria-pressed="${filter===0}">Todos</button>`+
+    Object.keys(GROUPS).map(g=>`<button type="button" class="g${g}" data-g="${g}" aria-pressed="${filter==g}"><i style="background:var(--g)"></i>Grupo ${g}</button>`).join("");
+}
+fEl.addEventListener("click",e=>{
+  const b=e.target.closest("button");if(!b)return;
+  filter=+b.dataset.g;renderFilters();renderList();updateMarkers();fitMap();
+});
+
+/* ---------- lista ---------- */
+const listEl=document.getElementById("aptList");
+function renderList(){
+  listEl.innerHTML=Object.keys(GROUPS).filter(g=>!filter||filter==g).map(g=>{
+    const items=APTS.filter(a=>a.g==g).map(a=>{
+      const n=countFor(a.id);
+      return `<button type="button" class="apt g${a.g}" data-id="${a.id}">
+        <span class="num">${a.id}</span>
+        <span><span class="apt-name">${esc(a.name)}</span><br>
+        <span class="apt-meta">${a.area} m² · ${brl(a.price)}</span>
+        ${a.note?`<br><span class="apt-note${a.fav?" fav":""}">${a.fav?"★ ":""}${esc(a.note)}</span>`:""}</span>
+        <span class="ccount">${n?`<b>${n}</b> ${n===1?"comentário":"comentários"}`:""}</span>
+      </button>`;}).join("");
+    return `<div class="grp g${g}"><h3><i style="background:var(--g)"></i>Grupo ${g} · ${esc(GROUPS[g].name)}</h3><div class="grp-items">${items}</div></div>`;
+  }).join("");
+}
+listEl.addEventListener("click",e=>{const b=e.target.closest(".apt");if(b)openSheet(+b.dataset.id)});
+listEl.addEventListener("mouseover",e=>{const b=e.target.closest(".apt");hot(b?+b.dataset.id:0)});
+listEl.addEventListener("mouseleave",()=>hot(0));
+
+/* ---------- mapa ---------- */
+let map=null;const markers={};
+const pos={};APTS.forEach(a=>pos[a.id]=(store.get("mud:geo:"+a.geo)||a.fb));
+function spread(){
+  // pinos do mesmo prédio/rua ficam lado a lado em vez de um em cima do outro
+  const seen={};
+  APTS.forEach(a=>{
+    const [la,lo]=pos[a.id];const k=la.toFixed(4)+","+lo.toFixed(4);
+    const i=seen[k]=(seen[k]||0)+1;
+    if(markers[a.id]){markers[a.id].setLatLng([la,lo]);markers[a.id].setIcon(icon(a,i-1))}
+  });
+  updateMarkers();
+}
+function icon(a,i=0){return L.divIcon({className:"",html:`<div class="mpin g${a.g}${a.fav?" fav":""}" data-id="${a.id}">${a.id}</div>`,iconSize:[30,30],iconAnchor:[15-i*27,15]})}
+function initMap(){
+  if(typeof L==="undefined"){document.getElementById("map").innerHTML='<p class="offline" style="margin:16px">Não foi possível carregar o mapa.</p>';return}
+  map=L.map("map",{scrollWheelZoom:false,zoomControl:true});
+  L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",{maxZoom:19,subdomains:"abcd",attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'}).addTo(map);
+  APTS.forEach(a=>{
+    const m=L.marker(pos[a.id],{icon:icon(a),title:`${a.id}. ${a.name}`,keyboard:true}).addTo(map);
+    m.on("click",()=>openSheet(a.id));
+    m.on("mouseover",()=>hot(a.id));m.on("mouseout",()=>hot(0));
+    markers[a.id]=m;
+  });
+  spread();fitMap();geocodeAll();
+}
+function fitMap(){
+  if(!map)return;
+  const pts=APTS.filter(a=>!filter||a.g===filter).map(a=>markers[a.id].getLatLng());
+  if(pts.length===1)map.setView(pts[0],15);else map.fitBounds(L.latLngBounds(pts),{padding:[40,40],maxZoom:16});
+}
+function updateMarkers(){APTS.forEach(a=>{const el=markers[a.id]&&markers[a.id].getElement();if(el)el.firstChild.classList.toggle("dim",!!filter&&a.g!==filter)})}
+function hot(id){
+  APTS.forEach(a=>{
+    const el=markers[a.id]&&markers[a.id].getElement();
+    if(el){el.firstChild.classList.toggle("hot",a.id===id);el.style.zIndex=a.id===id?1000:""}
+  });
+  listEl.querySelectorAll(".apt").forEach(b=>b.classList.toggle("hot",+b.dataset.id===id));
+}
+async function geocodeAll(){
+  // busca a posição de cada rua uma vez (OpenStreetMap) e guarda no navegador
+  const todo=[...new Set(APTS.filter(a=>a.geo&&!store.get("mud:geo:"+a.geo)).map(a=>a.geo))];
+  let changed=false;
+  for(const q of todo){
+    try{
+      const r=await fetch("https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=br&q="+encodeURIComponent(q));
+      const j=await r.json();
+      if(j[0]){const la=+j[0].lat,lo=+j[0].lon;
+        if(la>-23.7&&la<-23.4&&lo>-46.8&&lo<-46.5){store.set("mud:geo:"+q,[la,lo]);APTS.forEach(a=>{if(a.geo===q)pos[a.id]=[la,lo]});changed=true}}
+    }catch(e){return}
+    await new Promise(r=>setTimeout(r,1100));
+  }
+  if(changed){APTS.forEach(a=>markers[a.id].setLatLng(pos[a.id]));spread();fitMap()}
+}
+
+/* ---------- painel do apartamento ---------- */
+const bg=document.getElementById("sheetBg"),sheet=document.getElementById("sheet");
+let openId=0,lastFocus=null;
+function openSheet(id){
+  const a=APTS.find(x=>x.id===id);openId=id;lastFocus=document.activeElement;
+  const maps="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(a.addr.replace(" · ",", ")+", São Paulo");
+  sheet.innerHTML=`
+    <div class="sheet-top g${a.g}"><span class="num">${a.id}</span>
+      <div><h2 id="sheetTitle">${esc(a.name)}</h2><p>Grupo ${a.g} · ${esc(GROUPS[a.g].name)}</p><p>${esc(a.addr)}</p></div>
+      <button type="button" class="close" aria-label="Fechar">×</button></div>
+    ${a.note?`<span class="apt-note${a.fav?" fav":""}" style="align-self:flex-start;font-size:14px;padding:6px 14px">${a.fav?"★ ":""}${esc(a.note)}</span>`:""}
+    <div class="facts">
+      <div class="fact big"><span>Valor mensal</span><b>${brl(a.price)}</b>${a.priceSrc?' <small>total do anúncio</small>':""}</div>
+      <div class="fact"><span>Área</span><b>${a.area} m²</b>${a.areaSrc?' <small>do anúncio</small>':""}</div>
+      <div class="fact"><span>Aluguel</span><b>${brl(a.rent)}</b></div>
+      <div class="fact"><span>Condomínio</span><b>${brl(a.cond)}</b></div>
+      <div class="fact"><span>Detalhes</span><b style="font-size:14px;font-weight:500">${a.info.map(esc).join(" · ")}</b></div>
+    </div>
+    <p class="src">Aluguel, condomínio e detalhes conforme o anúncio em 24/09; podem mudar.</p>
+    <div class="links"><a class="btn primary" href="${a.url}" target="_blank" rel="noopener">Ver anúncio no ${a.src} ↗</a><a class="btn" href="${maps}" target="_blank" rel="noopener">Abrir no Google Maps ↗</a></div>
+    <div class="comments"><h3>Anotações e comentários</h3><div id="cBox"></div></div>`;
+  bg.hidden=false;document.body.style.overflow="hidden";
+  sheet.querySelector(".close").addEventListener("click",closeSheet);
+  sheet.querySelector(".close").focus();
+  renderComments(id);
+  if(C.online)loadComments();
+}
+function closeSheet(){bg.hidden=true;openId=0;document.body.style.overflow="";lastFocus&&lastFocus.focus&&lastFocus.focus()}
+bg.addEventListener("click",e=>{if(e.target===bg)closeSheet()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!bg.hidden)closeSheet()});
+
+function fmtTs(ts){const d=new Date(ts);return d.toLocaleDateString("pt-BR",{day:"2-digit",month:"short"}).replace(".","")+", "+d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}
+function renderComments(id){
+  const box=document.getElementById("cBox");if(!box)return;
+  const list=C.list.filter(c=>c.apt===id).sort((a,b)=>a.ts-b.ts);
+  const items=list.length?list.map(c=>`<div class="cmt"><header><b>${esc(c.name)}</b><span>${fmtTs(c.ts)}</span></header><p>${esc(c.text)}</p>${C.mine[c.id]?`<button type="button" class="del" data-del="${esc(c.id)}">Apagar</button>`:""}</div>`).join("")
+    :`<p class="empty">${C.online===false?"":"Nenhum comentário ainda. Seja o primeiro a anotar algo sobre este apartamento."}</p>`;
+  const name=store.get("mud:name")||"";
+  const form=C.online===false
+    ?`<p class="offline">Os comentários funcionam no site publicado no Vercel, depois que o banco de dados estiver conectado.</p>`
+    :`<form class="cform" id="cForm" novalidate>
+        <label for="cName">Seu nome</label><input id="cName" maxlength="40" autocomplete="name" value="${esc(name)}" required>
+        <label for="cText">Comentário</label><textarea id="cText" maxlength="1000" placeholder="Ex.: sala bem iluminada, barulho da rua, dá para negociar…" required></textarea>
+        ${C.pinRequired?`<label for="cPin">Código para comentar</label><input id="cPin" type="password" autocomplete="off" value="${esc(store.get("mud:pin")||"")}" required>`:""}
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><button class="btn primary" type="submit" id="cSend">Publicar comentário</button><p class="msg" id="cMsg" role="status"></p></div>
+      </form>`;
+  box.innerHTML=`<div class="clist">${items}</div>${form}`;
+  const f=document.getElementById("cForm");if(f)f.addEventListener("submit",e=>{e.preventDefault();postComment(id)});
+  box.querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",()=>delComment(b.dataset.del,b)));
+}
+async function postComment(id){
+  const name=document.getElementById("cName").value.trim(),text=document.getElementById("cText").value.trim();
+  const pinEl=document.getElementById("cPin"),pin=pinEl?pinEl.value.trim():"";
+  const msg=document.getElementById("cMsg"),btn=document.getElementById("cSend");
+  msg.className="msg err";
+  if(!name){msg.textContent="Escreva seu nome.";return}
+  if(!text){msg.textContent="Escreva o comentário.";return}
+  if(C.pinRequired&&!pin){msg.textContent="Informe o código para comentar.";return}
+  btn.disabled=true;msg.className="msg";msg.textContent="Publicando…";
+  try{
+    const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({apt:id,name,text,pin})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(j.error||"Não foi possível publicar. Tente de novo.");
+    store.set("mud:name",name);if(pin)store.set("mud:pin",pin);
+    C.mine[j.comment.id]=j.deleteKey;store.set("mud:mine",C.mine);
+    C.list.push(j.comment);renderComments(id);renderList();
+    const m=document.getElementById("cMsg");m.className="msg ok";m.textContent="Publicado.";
+  }catch(e){btn.disabled=false;msg.className="msg err";msg.textContent=e.message}
+}
+async function delComment(cid,btn){
+  if(btn.dataset.confirm!=="1"){btn.dataset.confirm="1";btn.textContent="Toque de novo para apagar";return}
+  btn.textContent="Apagando…";
+  try{
+    const r=await fetch(API+"?id="+encodeURIComponent(cid),{method:"DELETE",headers:{"Content-Type":"application/json"},body:JSON.stringify({key:C.mine[cid]})});
+    if(!r.ok)throw 0;
+    C.list=C.list.filter(c=>c.id!==cid);delete C.mine[cid];store.set("mud:mine",C.mine);
+    renderComments(openId);renderList();
+  }catch(e){btn.textContent="Não foi possível apagar"}
+}
+
+renderFilters();renderList();initMap();loadComments();
+setInterval(()=>{if(!document.hidden&&C.online)loadComments()},60000);
+})();
 </script>
 </body>
 </html>
