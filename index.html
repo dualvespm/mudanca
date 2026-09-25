@@ -697,7 +697,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{margin:0;-webkit-font-smoothing:antialiased;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;padding-inline:20px;padding-block:32px 64px}
-.wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:56px}
+.wrap{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:56px;padding-bottom:72px}
 
 /* HERO */
 .hero{position:relative;display:grid;grid-template-columns:1fr auto;gap:32px;align-items:end;padding-top:12px}
@@ -787,7 +787,70 @@ h2{font-size:28px;font-weight:600;letter-spacing:-.02em;margin:0}
 .visit em{font-style:normal;font-size:12px;font-weight:600;background:var(--blue);color:#fff;padding:2px 10px;border-radius:12px}
 .visit.past{background:var(--surface-2);color:var(--ink-3)} .visit.past em{background:var(--ink-3)}
 .grp-items{display:flex;flex-direction:column;gap:6px}
-.apt{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:36px 1fr auto;gap:14px;align-items:center;padding:12px 16px;border-radius:20px;background:var(--surface);transition:background .15s}
+.apt{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;padding:12px 16px;border-radius:20px;background:var(--surface);transition:background .15s,opacity .15s}
+.apt-open{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:36px 1fr;gap:14px;align-items:center;min-width:0;border-radius:12px}
+.apt-open:focus-visible,.cmp-t:focus-visible,.seg button:focus-visible,.rate-in button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.apt-side{display:flex;flex-direction:column;align-items:flex-end;gap:6px;text-align:right}
+.apt.st-descartado{opacity:.55}
+.apt.st-descartado .apt-name{text-decoration:line-through;text-decoration-color:var(--ink-3)}
+.apt.st-favorito{box-shadow:inset 0 0 0 2px var(--red)}
+.spill{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:10px;vertical-align:2px;letter-spacing:.02em;background:var(--surface-2);color:var(--ink-2)}
+.spill.visitado{background:var(--blue-soft);color:var(--blue-ink)}
+.spill.favorito{background:var(--red-soft);color:var(--red-ink)}
+.spill.descartado{background:var(--surface-2);color:var(--ink-3)}
+.stars{display:inline-flex;gap:1px;color:var(--line);font-size:16px;line-height:1}
+.stars.sm{font-size:13px}
+.stars i{font-style:normal}
+.stars i.on{color:var(--yellow)}
+.stars i.half{background:linear-gradient(90deg,var(--yellow) 50%,var(--line) 50%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.avg{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-variant-numeric:tabular-nums}
+.avg.none{color:var(--ink-3);font-size:12px}
+.cmp-t{font:inherit;font-size:12px;font-weight:500;padding:5px 10px;border-radius:14px;border:1px solid var(--line);background:var(--bg);color:var(--ink-2);cursor:pointer;white-space:nowrap}
+.cmp-t[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
+.sort{margin-left:auto;display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-3)}
+.sort select{font:inherit;font-size:14px;font-weight:500;padding:8px 12px;border-radius:20px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.decide{display:flex;flex-direction:column;gap:18px}
+.decide h3{font-size:18px;margin:0 0 10px;font-weight:600;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.avg-big{font-size:15px;font-weight:600;display:inline-flex;gap:6px;align-items:center;font-variant-numeric:tabular-nums}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{font:inherit;font-size:14px;font-weight:500;padding:8px 14px;border-radius:18px;border:1px solid var(--line);background:var(--bg);color:var(--ink-2);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.seg button.visitado[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
+.seg button.favorito[aria-pressed="true"]{background:var(--red);border-color:var(--red);color:#fff}
+.seg button.descartado[aria-pressed="true"]{background:var(--ink-3);border-color:var(--ink-3);color:#fff}
+.seg button:disabled{opacity:.5;cursor:default}
+.myrate{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--surface);padding:10px 14px;border-radius:16px;font-size:14px;color:var(--ink-2)}
+.rate-in{display:inline-flex}
+.rate-in button{all:unset;cursor:pointer;font-size:28px;line-height:1;color:var(--line);padding:0 2px;border-radius:6px;transition:transform .1s}
+.rate-in button.on{color:var(--yellow)}
+.rate-in:hover button{color:var(--yellow)}
+.rate-in button:hover~button{color:var(--line)}
+.rate-in button:active{transform:scale(1.2)}
+.linkish{all:unset;cursor:pointer;font-size:12px;color:var(--ink-3);text-decoration:underline}
+.rlist{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.rrow{display:flex;justify-content:space-between;align-items:center;font-size:14px;padding:6px 2px;border-bottom:1px solid var(--line)}
+.who{display:flex;flex-direction:column;gap:8px}
+.who label{font-size:13px;font-weight:500;color:var(--ink-2)}
+.who-row{display:flex;gap:8px;flex-wrap:wrap}
+.who-row input{font:inherit;font-size:15px;flex:1;min-width:140px;padding:10px 14px;border-radius:14px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.cmp-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:900;background:var(--ink);color:var(--bg);border-radius:28px;padding:8px 8px 8px 12px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 24px rgba(0,0,0,.25);font-size:14px;max-width:calc(100% - 32px);flex-wrap:wrap}
+.cmp-bar .btn{padding:8px 16px}
+.cmp-bar .btn:not(.primary){background:transparent;color:var(--bg);border-color:rgba(255,255,255,.3)}
+.cmp-nums{display:inline-flex}
+.cmp-nums .num{width:28px;height:28px;font-size:12px;border:2px solid var(--ink);margin-left:-6px}
+.cmp-nums .num:first-child{margin-left:0}
+.sheet-bg.center{justify-content:center;align-items:center;padding:16px}
+.sheet.wide{width:min(980px,100%);height:auto;max-height:100%;border-radius:28px}
+.tbl-wrap{overflow-x:auto;margin-inline:-4px}
+.cmp-tbl{width:100%;border-collapse:collapse;font-size:14px;min-width:520px}
+.cmp-tbl th,.cmp-tbl td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+.cmp-tbl tbody th{font-weight:500;color:var(--ink-3);font-size:12px;text-transform:uppercase;letter-spacing:.04em;width:130px}
+.cmp-tbl td{font-variant-numeric:tabular-nums}
+.cmp-tbl td.win{background:var(--green-soft);color:var(--green-ink);font-weight:600}
+.cmp-tbl thead th{border-bottom:0;vertical-align:bottom}
+.cmp-head{all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;font-weight:600;font-size:15px;margin-bottom:8px}
+.cmp-head small{display:block;font-weight:400;font-size:12px;color:var(--ink-3)}
+.cmp-ph{width:100%;max-width:220px;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block;background:var(--surface-2)}
 .apt:hover,.apt.hot{background:var(--surface-2)}
 .num{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:15px;color:#fff;font-variant-numeric:tabular-nums}
 .g1{--g:var(--blue)} .g2{--g:var(--red)} .g3{--g:var(--yellow)} .g4{--g:var(--green)} .g5{--g:var(--purple)}
@@ -807,6 +870,8 @@ h2{font-size:28px;font-weight:600;letter-spacing:-.02em;margin:0}
 .mpin{position:relative;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;font:600 13px/1 var(--sans);border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3);transition:transform .15s}
 .mpin.hot{transform:scale(1.25)}
 .mpin.dim{opacity:.25}
+.mpin.out{filter:grayscale(1);opacity:.45}
+.mpin.seen::before{content:"✓";position:absolute;bottom:-8px;right:-8px;width:16px;height:16px;border-radius:50%;background:#fff;color:var(--blue-ink);font-size:11px;display:grid;place-items:center;box-shadow:0 1px 3px rgba(0,0,0,.3)}
 .mpin.fav::after{content:"★";position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-size:13px;color:var(--red);text-shadow:0 0 2px #fff}
 .leaflet-container{font-family:var(--sans)}
 .tiles{filter:saturate(.55) brightness(1.04) contrast(.95)}
@@ -859,6 +924,11 @@ footer{font-size:13px;color:var(--ink-3);display:flex;justify-content:space-betw
   .date{flex-direction:row;align-items:baseline;gap:10px}
   .tag{justify-self:start}
   .apt-grid{grid-template-columns:1fr}
+  .apt{grid-template-columns:1fr}
+  .apt-side{flex-direction:row;justify-content:flex-start;align-items:center;flex-wrap:wrap;padding-left:50px}
+  .sort{margin-left:0}
+  .sheet.wide{border-radius:28px 28px 0 0;max-height:92%}
+  .sheet-bg.center{padding:0;align-items:flex-end}
   .map-card{position:relative;top:0}
   #map{height:380px}
   .sheet-bg{align-items:flex-end}
@@ -955,6 +1025,10 @@ footer{font-size:13px;color:var(--ink-3);display:flex;justify-content:space-betw
   <footer><span>Mudança 2026 · Eduardo Alves</span><span id="stamp"></span></footer>
 </div>
 
+<div class="cmp-bar" id="cmpBar" hidden></div>
+<div class="sheet-bg center" id="cmpBg" hidden>
+  <div class="sheet wide" role="dialog" aria-modal="true" aria-labelledby="cmpTitle" id="cmpSheet"></div>
+</div>
 <div class="sheet-bg" id="sheetBg" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" id="sheet"></div>
 </div>
@@ -1101,51 +1175,137 @@ document.getElementById("aptSummary").textContent=`${APTS.length} opções · 5 
 
 /* ---------- comentários ---------- */
 const API="/api/comments";
-const C={list:[],pinRequired:false,online:null,mine:store.get("mud:mine")||{}};
+const C={list:[],status:{},ratings:[],pinRequired:false,online:null,mine:store.get("mud:mine")||{}};
+const STATUS={visitar:{label:"A visitar",short:"A visitar"},visitado:{label:"Visitado",short:"Visitado"},favorito:{label:"Favorito",short:"★ Favorito"},descartado:{label:"Descartado",short:"Descartado"}};
+const statusOf=id=>C.status[id]||"visitar";
+const ratingsFor=id=>C.ratings.filter(r=>r.apt===id).sort((a,b)=>a.name.localeCompare(b.name));
+const avgFor=id=>{const r=ratingsFor(id);return r.length?r.reduce((t,x)=>t+x.stars,0)/r.length:null};
+const perM2=a=>Math.round(a.price/a.area);
+const fmt1=n=>n.toLocaleString("pt-BR",{minimumFractionDigits:1,maximumFractionDigits:1});
+const starsHtml=(n,size)=>`<span class="stars${size?" "+size:""}" aria-label="${fmt1(n)} de 5">${[1,2,3,4,5].map(i=>`<i class="${n>=i-.25?"on":n>=i-.75?"half":""}">★</i>`).join("")}</span>`;
 const countFor=id=>C.list.filter(c=>c.apt===id).length;
 async function loadComments(){
   try{
     const r=await fetch(API,{cache:"no-store"});
     const j=await r.json().catch(()=>null);
     if(!r.ok||!j){C.reason=r.status===404?"A função de comentários não foi encontrada. Confira se o arquivo está em api/comments.js no GitHub.":(j&&j.error)||("Erro "+r.status+" ao carregar os comentários.");throw 0}
-    C.list=j.comments||[];C.pinRequired=!!j.pinRequired;C.online=true;
+    C.list=j.comments||[];C.status=j.status||{};C.ratings=j.ratings||[];C.pinRequired=!!j.pinRequired;C.online=true;
   }catch(e){C.online=false;if(!C.reason)C.reason=location.protocol==="file:"||/claude|artifact/.test(location.host)?"Os comentários funcionam no site publicado no Vercel.":"Não foi possível falar com o servidor de comentários."}
-  renderList();
-  if(openId) renderComments(openId);
+  renderList();updateMarkers();renderCmpBar();
+  if(openId){renderComments(openId);renderDecide(openId)}
+  if(!cmpBg.hidden)renderCompare();
+}
+async function send(payload){
+  const pin=store.get("mud:pin")||"";
+  const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({...payload,pin})});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(j.error||"Não foi possível salvar. Tente de novo.");
+  return j;
 }
 
 /* ---------- filtros ---------- */
-let filter=0;
+let filter=0,sortBy=store.get("mud:sort")||"grupo";
 const fEl=document.getElementById("filters");
+const SORTS={grupo:"Por grupo",nota:"Melhor nota",preco:"Menor valor",m2:"Menor R$/m²"};
 function renderFilters(){
   fEl.innerHTML=`<button type="button" data-g="0" aria-pressed="${filter===0}">Todos</button>`+
-    Object.keys(GROUPS).map(g=>`<button type="button" class="g${g}" data-g="${g}" aria-pressed="${filter==g}"><i style="background:var(--g)"></i>Grupo ${g}</button>`).join("");
+    Object.keys(GROUPS).map(g=>`<button type="button" class="g${g}" data-g="${g}" aria-pressed="${filter==g}"><i style="background:var(--g)"></i>Grupo ${g}</button>`).join("")+
+    `<label class="sort"><span>Ordenar</span><select id="sortSel">${Object.entries(SORTS).map(([k,v])=>`<option value="${k}"${k===sortBy?" selected":""}>${v}</option>`).join("")}</select></label>`;
 }
+fEl.addEventListener("change",e=>{if(e.target.id==="sortSel"){sortBy=e.target.value;store.set("mud:sort",sortBy);renderList()}});
 fEl.addEventListener("click",e=>{
-  const b=e.target.closest("button");if(!b)return;
+  const b=e.target.closest("button[data-g]");if(!b)return;
   filter=+b.dataset.g;renderFilters();renderList();updateMarkers();fitMap();
 });
 
 /* ---------- lista ---------- */
 const listEl=document.getElementById("aptList");
-function renderList(){
-  listEl.innerHTML=Object.keys(GROUPS).filter(g=>!filter||filter==g).map(g=>{
-    const items=APTS.filter(a=>a.g==g).map(a=>{
-      const n=countFor(a.id);
-      return `<button type="button" class="apt g${a.g}" data-id="${a.id}">
-        <span class="num">${a.id}</span>
-        <span><span class="apt-name">${esc(a.name)}</span><br>
-        <span class="apt-meta">${a.area} m² · ${brl(a.price)}</span>
-        ${(PHOTOS[a.id]||[]).length?`<span class="thumbs">${PHOTOS[a.id].map(u=>imgTag(u,"th")).join("")}</span>`:""}
-        ${a.note?`<br><span class="apt-note${a.fav?" fav":""}">${a.fav?"★ ":""}${esc(a.note)}</span>`:""}</span>
-        <span class="ccount">${n?`<b>${n}</b> ${n===1?"comentário":"comentários"}`:""}</span>
-      </button>`;}).join("");
-    return `<div class="grp g${g}"><h3><i style="background:var(--g)"></i>Grupo ${g} · ${esc(GROUPS[g].name)}</h3>${visitChip(g)}<div class="grp-items">${items}</div></div>`;
-  }).join("");
+function card(a){
+  const n=countFor(a.id),st=statusOf(a.id),avg=avgFor(a.id),inCmp=cmp.includes(a.id);
+  return `<div class="apt g${a.g} st-${st}" data-id="${a.id}">
+    <button type="button" class="apt-open" data-open="${a.id}">
+      <span class="num">${a.id}</span>
+      <span><span class="apt-name">${esc(a.name)}</span>${st!=="visitar"?` <span class="spill ${st}">${STATUS[st].short}</span>`:""}<br>
+      <span class="apt-meta">${a.area} m² · ${brl(a.price)} · ${brl(perM2(a))}/m²</span>
+      ${(PHOTOS[a.id]||[]).length?`<span class="thumbs">${PHOTOS[a.id].map(u=>imgTag(u,"th")).join("")}</span>`:""}
+      ${a.note?`<br><span class="apt-note${a.fav?" fav":""}">${a.fav?"★ ":""}${esc(a.note)}</span>`:""}</span>
+    </button>
+    <div class="apt-side">
+      ${avg!==null?`<span class="avg">${starsHtml(avg,"sm")}<b>${fmt1(avg)}</b></span>`:`<span class="avg none">sem nota</span>`}
+      <span class="ccount">${n?`<b>${n}</b> ${n===1?"comentário":"comentários"}`:""}</span>
+      <button type="button" class="cmp-t" data-cmp="${a.id}" aria-pressed="${inCmp}">${inCmp?"✓ Comparando":"+ Comparar"}</button>
+    </div>
+  </div>`;
 }
-listEl.addEventListener("click",e=>{const b=e.target.closest(".apt");if(b)openSheet(+b.dataset.id)});
+const outLast=(x,y)=>(statusOf(x.id)==="descartado")-(statusOf(y.id)==="descartado");
+function renderList(){
+  const pool=APTS.filter(a=>!filter||a.g===filter);
+  if(sortBy==="grupo"){
+    listEl.innerHTML=Object.keys(GROUPS).filter(g=>!filter||filter==g).map(g=>{
+      const items=pool.filter(a=>a.g==g).sort(outLast).map(card).join("");
+      return `<div class="grp g${g}"><h3><i style="background:var(--g)"></i>Grupo ${g} · ${esc(GROUPS[g].name)}</h3>${visitChip(g)}<div class="grp-items">${items}</div></div>`;
+    }).join("");
+    return;
+  }
+  const key={nota:a=>-(avgFor(a.id)??-1),preco:a=>a.price,m2:a=>perM2(a)}[sortBy];
+  const sorted=[...pool].sort((x,y)=>outLast(x,y)||key(x)-key(y)||x.id-y.id);
+  const hint=sortBy==="nota"&&!C.ratings.length?`<p class="empty" style="margin-bottom:8px">Ainda não há notas. Abra um apartamento e dê a sua.</p>`:"";
+  listEl.innerHTML=`<div class="grp"><h3>${SORTS[sortBy]}${filter?` · Grupo ${filter}`:""}</h3>${hint}<div class="grp-items">${sorted.map((a,i)=>card(a)).join("")}</div></div>`;
+}
+listEl.addEventListener("click",e=>{
+  const c=e.target.closest("[data-cmp]");if(c){toggleCmp(+c.dataset.cmp);return}
+  const o=e.target.closest("[data-open]");if(o)openSheet(+o.dataset.open);
+});
 listEl.addEventListener("mouseover",e=>{const b=e.target.closest(".apt");hot(b?+b.dataset.id:0)});
 listEl.addEventListener("mouseleave",()=>hot(0));
+
+/* ---------- comparar ---------- */
+let cmp=(store.get("mud:cmp")||[]).filter(id=>APTS.some(a=>a.id===id)).slice(0,3);
+const cmpBar=document.getElementById("cmpBar"),cmpBg=document.getElementById("cmpBg"),cmpSheet=document.getElementById("cmpSheet");
+function toggleCmp(id){
+  if(cmp.includes(id))cmp=cmp.filter(x=>x!==id);
+  else{if(cmp.length>=3){flash("Dá para comparar até 3 apartamentos por vez.");return}cmp.push(id)}
+  store.set("mud:cmp",cmp);renderList();renderCmpBar();
+}
+function flash(t){cmpBar.hidden=false;cmpBar.innerHTML=`<span>${esc(t)}</span>`;setTimeout(renderCmpBar,1800)}
+function renderCmpBar(){
+  if(!cmp.length){cmpBar.hidden=true;return}
+  cmpBar.hidden=false;
+  cmpBar.innerHTML=`<span class="cmp-nums">${cmp.map(id=>{const a=APTS.find(x=>x.id===id);return `<span class="num g${a.g}">${id}</span>`}).join("")}</span>
+    <span>${cmp.length===1?"Escolha mais 1 ou 2 para comparar":`${cmp.length} apartamentos selecionados`}</span>
+    <button type="button" class="btn primary" id="cmpGo"${cmp.length<2?" disabled":""}>Comparar</button>
+    <button type="button" class="btn" id="cmpClear">Limpar</button>`;
+  document.getElementById("cmpGo").onclick=openCompare;
+  document.getElementById("cmpClear").onclick=()=>{cmp=[];store.set("mud:cmp",cmp);renderList();renderCmpBar()};
+}
+function openCompare(){cmpBg.hidden=false;document.body.style.overflow="hidden";renderCompare();cmpSheet.querySelector(".close").focus()}
+function closeCompare(){cmpBg.hidden=true;document.body.style.overflow=""}
+cmpBg.addEventListener("click",e=>{if(e.target===cmpBg)closeCompare()});
+function renderCompare(){
+  const L=cmp.map(id=>APTS.find(a=>a.id===id));
+  const people=[...new Set(C.ratings.filter(r=>cmp.includes(r.apt)).map(r=>r.name))].sort();
+  const best=(fn,dir)=>{const v=L.map(fn).filter(x=>x!==null&&x!==undefined);if(v.length<2)return null;return dir==="min"?Math.min(...v):Math.max(...v)};
+  const row=(label,fn,fmtf,dir)=>{const b=dir?best(fn,dir):null;return `<tr><th scope="row">${label}</th>${L.map(a=>{const v=fn(a);const win=b!==null&&v===b&&L.filter(x=>fn(x)===b).length<L.length;return `<td${win?' class="win"':""}>${v===null||v===undefined?"—":fmtf(v,a)}</td>`}).join("")}</tr>`};
+  cmpSheet.innerHTML=`<div class="sheet-top"><div><h2 id="cmpTitle">Comparar apartamentos</h2><p>Destaque em verde: o melhor em cada linha.</p></div><button type="button" class="close" aria-label="Fechar">×</button></div>
+  <div class="tbl-wrap"><table class="cmp-tbl">
+    <thead><tr><th></th>${L.map(a=>`<th scope="col"><button type="button" class="cmp-head g${a.g}" data-open="${a.id}"><span class="num">${a.id}</span><span>${esc(a.name)}<small>Grupo ${a.g}</small></span></button>${(PHOTOS[a.id]||[])[0]?imgTag(PHOTOS[a.id][0],"cmp-ph"):""}</th>`).join("")}</tr></thead>
+    <tbody>
+      ${row("Valor mensal",a=>a.price,v=>brl(v),"min")}
+      ${row("Área",a=>a.area,v=>v+" m²","max")}
+      ${row("R$ por m²",a=>perM2(a),v=>brl(v),"min")}
+      ${row("Aluguel",a=>a.rent,v=>brl(v),"min")}
+      ${row("Condomínio",a=>a.cond,v=>brl(v),"min")}
+      ${row("Detalhes",a=>a.info.join(" · "),v=>esc(v))}
+      ${row("Endereço",a=>a.addr,v=>esc(v))}
+      ${row("Situação",a=>STATUS[statusOf(a.id)].label,(v,a)=>`<span class="spill ${statusOf(a.id)}">${v}</span>`)}
+      ${row("Nota média",a=>avgFor(a.id),v=>`${starsHtml(v,"sm")} <b>${fmt1(v)}</b>`,"max")}
+      ${people.map(p=>row("Nota · "+esc(p),a=>{const r=ratingsFor(a.id).find(x=>x.name===p);return r?r.stars:null},v=>starsHtml(v,"sm"),"max")).join("")}
+      ${row("Comentários",a=>countFor(a.id),v=>v)}
+      ${row("Anotação",a=>a.note||null,v=>esc(v))}
+    </tbody></table></div>`;
+  cmpSheet.querySelector(".close").onclick=closeCompare;
+  cmpSheet.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>{closeCompare();openSheet(+b.dataset.open)});
+}
 
 /* ---------- mapa ---------- */
 let map=null;const markers={};
@@ -1178,7 +1338,8 @@ function fitMap(){
   const pts=APTS.filter(a=>!filter||a.g===filter).map(a=>markers[a.id].getLatLng());
   if(pts.length===1)map.setView(pts[0],15);else map.fitBounds(L.latLngBounds(pts),{padding:[40,40],maxZoom:16});
 }
-function updateMarkers(){APTS.forEach(a=>{const el=markers[a.id]&&markers[a.id].getElement();if(el)el.firstChild.classList.toggle("dim",!!filter&&a.g!==filter)})}
+function updateMarkers(){APTS.forEach(a=>{const el=markers[a.id]&&markers[a.id].getElement();if(!el)return;const m=el.firstChild,st=statusOf(a.id);
+  m.classList.toggle("dim",!!filter&&a.g!==filter);m.classList.toggle("out",st==="descartado");m.classList.toggle("seen",st==="visitado");m.classList.toggle("fav",!!a.fav||st==="favorito")})}
 function hot(id){
   APTS.forEach(a=>{
     const el=markers[a.id]&&markers[a.id].getElement();
@@ -1223,17 +1384,53 @@ function openSheet(id){
     </div>
     <p class="src">Aluguel, condomínio e detalhes conforme o anúncio em 24/09; podem mudar.</p>
     <div class="links"><a class="btn primary" href="${a.url}" target="_blank" rel="noopener">Ver anúncio no ${a.src} ↗</a><a class="btn" href="${maps}" target="_blank" rel="noopener">Abrir no Google Maps ↗</a></div>
+    <div id="dBox" class="decide"></div>
     <div class="comments"><h3>Anotações e comentários</h3><div id="cBox"></div></div>`;
   bg.hidden=false;document.body.style.overflow="hidden";
   sheet.querySelector(".close").addEventListener("click",closeSheet);
   sheet.querySelector(".close").focus();
-  renderComments(id);
+  renderComments(id);renderDecide(id);
   if(C.online)loadComments();
 }
 function closeSheet(){bg.hidden=true;openId=0;document.body.style.overflow="";lastFocus&&lastFocus.focus&&lastFocus.focus()}
 bg.addEventListener("click",e=>{if(e.target===bg)closeSheet()});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!bg.hidden)closeSheet()});
+document.addEventListener("keydown",e=>{if(e.key!=="Escape")return;if(!cmpBg.hidden)closeCompare();else if(!bg.hidden)closeSheet()});
 
+function renderDecide(id){
+  const box=document.getElementById("dBox");if(!box)return;
+  const st=statusOf(id),rs=ratingsFor(id),avg=avgFor(id),me=store.get("mud:name")||"";
+  const mine=me?rs.find(r=>r.name.toLowerCase()===me.toLowerCase()):null;
+  const off=C.online===false;
+  const needPin=C.pinRequired&&!store.get("mud:pin");
+  box.innerHTML=`
+    <div><h3>Situação</h3>
+      <div class="seg" role="group" aria-label="Situação do apartamento">${Object.entries(STATUS).map(([k,v])=>`<button type="button" data-st="${k}" class="${k}" aria-pressed="${st===k}"${off?" disabled":""}>${v.label}</button>`).join("")}</div></div>
+    <div><h3>Notas ${avg!==null?`<span class="avg-big">${starsHtml(avg)} ${fmt1(avg)}</span>`:""}</h3>
+      ${off?"":(!me||needPin)?`<form class="who" id="whoForm"><label for="whoName">Seu nome para dar nota</label><div class="who-row"><input id="whoName" maxlength="40" value="${esc(me)}" placeholder="Ex.: Edu">${needPin?`<input id="whoPin" type="password" placeholder="Código para comentar" autocomplete="off">`:""}<button class="btn primary" type="submit">Continuar</button></div></form>`
+        :`<div class="myrate"><span>Sua nota, ${esc(me)}</span><span class="rate-in" role="group" aria-label="Sua nota">${[1,2,3,4,5].map(i=>`<button type="button" data-star="${i}" class="${mine&&mine.stars>=i?"on":""}" aria-label="${i} de 5">★</button>`).join("")}</span>${mine?`<button type="button" class="linkish" data-star="0">limpar</button>`:""}<button type="button" class="linkish" id="whoSwap">não é ${esc(me)}?</button></div>`}
+      <div class="rlist">${rs.length?rs.map(r=>`<div class="rrow"><b>${esc(r.name)}</b>${starsHtml(r.stars,"sm")}</div>`).join(""):`<p class="empty">${off?"":"Ninguém deu nota ainda."}</p>`}</div>
+      ${off?`<p class="offline">${esc(C.reason||"As notas funcionam no site publicado no Vercel.")}</p>`:""}
+      <p class="msg" id="dMsg" role="status"></p></div>`;
+  const msg=t=>{const m=document.getElementById("dMsg");if(m){m.className="msg err";m.textContent=t}};
+  box.querySelectorAll("[data-st]").forEach(b=>b.onclick=async()=>{
+    const prev=C.status[id],v=b.dataset.st;
+    if(v==="visitar")delete C.status[id];else C.status[id]=v;
+    renderDecide(id);renderList();updateMarkers();
+    try{await send({kind:"status",apt:id,value:v})}catch(e){if(prev)C.status[id]=prev;else delete C.status[id];renderDecide(id);renderList();updateMarkers();msg(e.message)}
+  });
+  box.querySelectorAll("[data-star]").forEach(b=>b.onclick=async()=>{
+    const n=+b.dataset.star,prev=C.ratings.slice();
+    C.ratings=C.ratings.filter(r=>!(r.apt===id&&r.name.toLowerCase()===me.toLowerCase()));
+    if(n)C.ratings.push({apt:id,name:me,stars:n,ts:Date.now()});
+    renderDecide(id);renderList();
+    try{await send({kind:"rating",apt:id,name:me,stars:n})}catch(e){C.ratings=prev;renderDecide(id);renderList();msg(e.message)}
+  });
+  const sw=document.getElementById("whoSwap");if(sw)sw.onclick=()=>{store.set("mud:name","");renderDecide(id)};
+  const wf=document.getElementById("whoForm");if(wf)wf.onsubmit=e=>{e.preventDefault();
+    const n=document.getElementById("whoName").value.trim();if(!n){msg("Escreva seu nome.");return}
+    store.set("mud:name",n);const pe=document.getElementById("whoPin");if(pe&&pe.value.trim())store.set("mud:pin",pe.value.trim());
+    renderDecide(id);const cn=document.getElementById("cName");if(cn&&!cn.value)cn.value=n};
+}
 function fmtTs(ts){const d=new Date(ts);return d.toLocaleDateString("pt-BR",{day:"2-digit",month:"short"}).replace(".","")+", "+d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})}
 function renderComments(id){
   const box=document.getElementById("cBox");if(!box)return;
@@ -1283,7 +1480,7 @@ async function delComment(cid,btn){
   }catch(e){btn.textContent="Não foi possível apagar"}
 }
 
-renderFilters();renderList();initMap();loadComments();
+renderFilters();renderList();renderCmpBar();initMap();loadComments();
 setInterval(()=>{if(!document.hidden&&C.online)loadComments()},60000);
 })();
 </script>
